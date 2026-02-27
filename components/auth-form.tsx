@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "./ui/button";
-import { FcGoogle } from "react-icons/fc";
-import { Field, FieldGroup, FieldLabel, FieldSeparator } from "./ui/field";
+import { Field, FieldGroup, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
 import Link from "next/link";
+import { Separator } from "./ui/separator";
+import { Icon } from "@iconify/react";
 
 export default function AuthForm() {
   return (
@@ -34,17 +35,24 @@ export default function AuthForm() {
                 type="button"
                 className="h-12 gap-3"
               >
-                <FcGoogle/>
-                <span className="font-medium">Continue with Google</span>
+                <Icon icon="logos:google-icon" />
+                <span className="text-base">Continue with Google</span>
               </Button>
             </Field>
 
-            <FieldSeparator className="py-1 text-muted-foreground text-[10px] uppercase font-medium">
-              Or use email
-            </FieldSeparator>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase">
+                <span className="bg-card px-2 text-muted-foreground font-medium">
+                  or
+                </span>
+              </div>
+            </div>
 
             <Field>
-              <FieldLabel htmlFor="email" className="text-[12px] font-medium uppercase tracking-wide">
+              <FieldLabel htmlFor="email" className="text-[12px] font-bold uppercase tracking-wide">
                 Email Address
               </FieldLabel>
               <Input
@@ -53,14 +61,14 @@ export default function AuthForm() {
                 name="email"
                 placeholder="name@example.com"
                 required
-                className="h-12"
+                className="h-12 placeholder:text-base"
               />
             </Field>
 
             <Field>
               <Button 
                 type="submit" 
-                className="h-12"
+                className="h-12 text-base"
               >
                 Continue
               </Button>

@@ -77,9 +77,11 @@ export default function AuthForm() {
             </Field>
 
             <Field className="text-center">
-              <Link href="" className="text-xs font-medium text-muted-foreground hover:text-Linkrimary underline underline-offset-4 transition-colors">
-                Privacy Policy & Terms
-              </Link>
+            
+                <Link href="" className="underline underline-offset-4 text-xs font-medium text-muted-foreground">
+                  Privacy Policy & Terms
+                </Link>
+              
             </Field>
           </FieldGroup>
         </form>

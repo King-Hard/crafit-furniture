@@ -1,18 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const TABLE_PRODUCTS = [
-  { id: 1, name: "Solid Oak Dining", price: "₱35,000", img: "/t1.jpg" },
-  { id: 2, name: "Coffee Table Set", price: "₱12,500", img: "/t2.jpg" },
-  { id: 3, name: "Executive Desk", price: "₱24,000", img: "/t3.jpg" },
-  { id: 4, name: "Marble Accent", price: "₱18,000", img: "/t4.jpg" },
-  { id: 5, name: "Circular Bistro", price: "₱9,500", img: "/t5.jpg" },
-  { id: 6, name: "Kamagong Study", price: "₱22,000", img: "/t6.jpg" },
-  { id: 7, name: "Outdoor Patio", price: "₱15,000", img: "/t7.jpg" },
-  { id: 8, name: "Console Entry", price: "₱11,800", img: "/t8.jpg" },
+const BED_PRODUCTS = [
+  { id: 1, name: "Siesta Platform", price: "₱45,000", img: "/bed1.jpg" },
+  { id: 2, name: "Haraya King Frame", price: "₱58,000", img: "/bed2.jpg" },
+  { id: 3, name: "Minimalist Daybed", price: "₱32,000", img: "/bed3.jpg" },
+  { id: 4, name: "Heritage Canopy", price: "₱75,000", img: "/bed4.jpg" },
+  { id: 5, name: "Luna Bedstead", price: "₱48,500", img: "/bed5.jpg" },
+  { id: 6, name: "Sulu Rattan Frame", price: "₱38,000", img: "/bed6.jpg" },
+  { id: 7, name: "Modern Loft Bed", price: "₱29,000", img: "/bed7.jpg" },
+  { id: 8, name: "Tahanan Queen", price: "₱52,000", img: "/bed8.jpg" },
 ];
 
-export default function Tables() {
+export default function BedsFrames() {
   return (
     <main className="min-h-screen bg-background pb-20">
       <nav className="mx-auto px-6 lg:px-12 py-6">
@@ -21,18 +21,18 @@ export default function Tables() {
           <span className="opacity-50">/</span>
           <Link href="/furniture" className="hover:text-foreground transition-colors">Furniture</Link>
           <span className="opacity-50">/</span>
-          <span className="text-foreground">Tables</span>
+          <span className="text-foreground">Beds & Frames</span>
         </div>
       </nav>
 
       <header className="mb-12 text-center px-4">
-        <h1 className="font-serif text-foreground text-5xl lg:text-7xl tracking-tight">Tables</h1>
+        <h1 className="font-serif text-foreground text-5xl lg:text-7xl tracking-tight">Beds & Frames</h1>
         <div className="h-[1px] w-12 bg-foreground/20 mx-auto mt-6" />
       </header>
 
       <div className="max-w-[1800px] mx-auto px-4 lg:px-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 lg:gap-x-8 lg:gap-y-16">
-          {TABLE_PRODUCTS.map((product) => (
+          {BED_PRODUCTS.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -41,6 +41,7 @@ export default function Tables() {
   );
 }
 
+// ProductCard component (Reusable for consistency)
 function ProductCard({ product }: { product: any }) {
   return (
     <div className="group flex flex-col cursor-pointer">

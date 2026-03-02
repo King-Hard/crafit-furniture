@@ -33,7 +33,7 @@ export default function Footer() {
               { label: "Help & Contact", href: "#" },
               {label: "My Orders", href: "#" },
               { label: "Delivery & Returns", href: "#" },
-              { label: "FAQ", href: "#" },
+              { label: "FAQs", href: "#" },
             ]} />
             <div className="space-y-4">
               <h1 className="font-bold text-sm uppercase tracking-widest font-sans">Follow Us</h1>

@@ -17,7 +17,7 @@ const ALL_PRODUCTS = [
 
 export default function Furniture() {
   return (
-    <main className="min-h-screen bg-background pb-20">
+    <main className="min-h-screen pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* 1. BREADCRUMBS */}
       <nav className="mx-auto px-6 lg:px-12 py-6">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
@@ -73,7 +73,7 @@ export default function Furniture() {
 function ProductCard({ product }: { product: any }) {
   return (
     <div className="group flex flex-col cursor-pointer">
-      <div className="relative aspect-[3/4] overflow-hidden bg-accent/20">
+      <div className="relative aspect-[3/4] overflow-hidden bg-accent/70">
         {/* Category Badge - Para alam ng user kung anong klase ito */}
         <div className="absolute top-4 left-4 z-10 text-[9px] uppercase tracking-widest bg-background/80 backdrop-blur-sm px-2 py-1 text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           {product.category}

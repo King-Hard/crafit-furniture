@@ -14,19 +14,19 @@ const BED_PRODUCTS = [
 
 export default function BedsFrames() {
   return (
-    <main className="min-h-screen bg-background pb-20">
+    <main className="min-h-screen pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <nav className="mx-auto px-6 lg:px-12 py-6">
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
           <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
           <span className="opacity-50">/</span>
           <Link href="/furniture" className="hover:text-foreground transition-colors">Furniture</Link>
           <span className="opacity-50">/</span>
-          <span className="text-foreground">Beds & Frames</span>
+          <span className="text-foreground">Bed Frames</span>
         </div>
       </nav>
 
       <header className="mb-12 text-center px-4">
-        <h1 className="font-serif text-foreground text-5xl lg:text-7xl tracking-tight">Beds & Frames</h1>
+        <h1 className="font-serif text-foreground text-5xl lg:text-7xl tracking-tight">Bed Frames</h1>
         <div className="h-[1px] w-12 bg-foreground/20 mx-auto mt-6" />
       </header>
 
@@ -45,7 +45,7 @@ export default function BedsFrames() {
 function ProductCard({ product }: { product: any }) {
   return (
     <div className="group flex flex-col cursor-pointer">
-      <div className="relative aspect-[3/4] overflow-hidden bg-accent/30 transition-all">
+      <div className="relative aspect-[3/4] overflow-hidden bg-accent/70 transition-all">
         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20 font-serif italic text-4xl">Craftit</div>
         <Image src={product.img} alt={product.name} fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
       </div>

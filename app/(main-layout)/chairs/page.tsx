@@ -15,7 +15,7 @@ const CHAIR_PRODUCTS = [
 
 export default function Chairs() {
   return (
-    <main className="min-h-screen bg-background pb-20">
+    <main className="min-h-screen pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* 1. BREADCRUMBS */}
       <nav className="mx-auto px-6 lg:px-12 py-6">
@@ -54,7 +54,7 @@ function ProductCard({ product }: { product: any }) {
   return (
     <div className="group flex flex-col cursor-pointer">
       {/* Image Container - Using Aspect Ratio for consistency */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-accent/30 transition-all">
+      <div className="relative aspect-[3/4] overflow-hidden bg-accent/70 transition-all">
         {/* Placeholder label para makita mo yung positioning habang wala pang images */}
         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20 font-serif italic text-4xl">
            Craftit

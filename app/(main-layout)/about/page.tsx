@@ -1,11 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function About() {
   return (
-    <main className="min-h-screen bg-[#FCF9F6] dark:bg-[#121212] transition-colors">
+    <main className="min-h-screen bg-[#FCF9F6] dark:bg-[#121212] transition-colors animate-in fade-in slide-in-from-bottom-4 duration-700 ">
       
       {/* SECTION 1: THE ORIGIN (HISTORY) */}
       <section className="py-24 px-6 lg:px-24 max-w-7xl mx-auto">

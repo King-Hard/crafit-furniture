@@ -194,7 +194,7 @@ export default function AdminSidebar() {
       </SidebarContent>
 
       {/* Footer with User Menu */}
-      <SidebarFooter className="border-t border-accent  ">
+      <SidebarFooter className="border-t">
         <div className="relative" ref={accountMenuRef}>
           <button
             onClick={() => setAccount(!account)}
@@ -219,8 +219,8 @@ export default function AdminSidebar() {
 
           {/* Account Dropdown Menu */}
           {account && (
-            <div className="absolute bottom-full left-0 w-full mb-2 bg-popover border border-accent rounded-lg shadow-lg overflow-hidden">
-              <div className="p-2 border-b border-accent">
+            <div className="absolute bottom-full left-0 w-full z-50 bg-popover border rounded-lg shadow-lg overflow-hidden mb-2">
+              <div className="p-2 border-b">
                 <div className="flex items-center gap-3 p-2">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">
@@ -254,7 +254,7 @@ export default function AdminSidebar() {
                 </SidebarMenuItem>
               </div>
               
-              <div className="border-t border-accent p-1">
+              <div className="border-t p-1">
                 <SidebarMenuItem>
                   <Button 
                     variant="ghost" 

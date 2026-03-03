@@ -64,9 +64,9 @@ export default function AdminAuth() {
             </Field>
 
             <Field>
-              <Button type="submit" className="h-12 text-base">
-                Continue
-              </Button>
+              <Link href="/loading">
+                <Button type="submit" className="w-full h-12 text-base">Continue</Button>
+              </Link>
             </Field>
           </FieldGroup>
         </form>

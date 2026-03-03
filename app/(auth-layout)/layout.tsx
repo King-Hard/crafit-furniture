@@ -6,7 +6,7 @@ export default function AuthenticationLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="bg-gradient-to-br from-muted to-background">
       {children}
     </div>
   );

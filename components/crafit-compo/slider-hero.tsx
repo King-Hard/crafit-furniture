@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 const heroSlides = [
-  { id: 1, src: "/alden.png", alt: "Featured Craft" },
-  { id: 2, src: "/furniture.png", alt: "Modern Sofa" }, 
-  { id: 3, src: "/bobo.png", alt: "Wooden Table" },
+  { id: 1, src: "/alden1.png", alt: "Featured Craft" },
+  { id: 2, src: "/furniture2.png", alt: "Modern Sofa" }, 
+  { id: 3, src: "/bobo3.png", alt: "Wooden Table" },
 ];
 
 export default function Hero() {

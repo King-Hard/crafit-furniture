@@ -1,11 +1,239 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Box, ChevronRight, Heart, LockKeyhole, MessageCircle, Minus, Plus, ShieldCheck, Tag, X } from "lucide-react";
 import Link from "next/link";
 
-export default function Carts(){
-  return(
-    <div>
-      <h1 className="text-9xl">Your Basket is Empty</h1>
-      <Link href="/furniture"><Button >Continue to Shopping</Button></Link>
+const cartItems = [
+  {
+    id: 1,
+    name: "Velvet Lounge Chair",
+    price: 450,
+    qty: 1,
+    image: "/chair.jpg",
+    color: "Forest Green",
+  },
+  {
+    id: 2,
+    name: "Velvet Lounge Chair",
+    price: 450,
+    qty: 1,
+    image: "/chair.jpg",
+    color: "Forest Green",
+  },
+  {
+    id: 3,
+    name: "Velvet Lounge Chair",
+    price: 450,
+    qty: 1,
+    image: "/chair.jpg",
+    color: "Forest Green",
+  },
+  {
+    id: 4,
+    name: "Velvet Lounge Chair",
+    price: 450,
+    qty: 1,
+    image: "/chair.jpg",
+    color: "Forest Green",
+  },
+];
+
+export default function CartWithItems() {
+  return (
+    <div className="mx-auto px-6 lg:px-12 py-12">
+      <h1 className="mb-8 font-serif text-foreground text-3xl lg:text-5xl tracking-tight">
+        Your Basket 
+      </h1>
+
+      <div className="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-12">
+        {/* --- LEFT SIDE: Product List --- */}
+        <div className="lg:col-span-8">
+          {cartItems.map((item) => (
+            <div
+              key={item.id}
+              className="flex border-b border-border py-8 first:border-t"
+            >
+              {/* Image Placeholder */}
+              <div className="h-40 w-32 flex-shrink-0 bg-accent sm:h-52 sm:w-40">
+                <div className="h-full w-full object-cover" />
+              </div>
+
+              <div className="ml-6 flex flex-1 flex-col justify-between">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-sm font-medium uppercase tracking-widest text-foreground">
+                      {item.name}
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {item.color}
+                    </p>
+                  </div>
+
+                  <p className="text-sm font-medium text-foreground">
+                    ₱{item.price.toFixed(2)}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between mt-4">
+                  {/* Quantity Selector - Minimal Style */}
+                  <div className="flex items-center border border-input rounded-sm">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 rounded-none hover:bg-accent"
+                    >
+                      <Minus size={12} />
+                    </Button>
+                    <span className="px-4 text-xs font-medium tabular-nums">
+                      {item.qty}
+                    </span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 rounded-none hover:bg-accent"
+                    >
+                      <Plus size={12} />
+                    </Button>
+                  </div>        
+                  
+                  {/* Actions */}
+                  <div className="flex items-center gap-1">
+                    <Button variant="outline" size="icon" className="hover:text-foreground">
+                      <Heart size={18} strokeWidth={2} />
+                    </Button>
+                    <Button variant="outline" size="icon" className="hover:text-destructive">
+                      <X size={18} strokeWidth={2} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* --- RIGHT SIDE: Summary --- */}
+        <div className="lg:col-span-4">
+          <Card className="sticky top-24 p-8">
+            <h2 className="uppercase tracking-[0.2em] ">
+              Order Summary
+            </h2>
+
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between text-muted-foreground font-medium">
+                  <span>Subtotal</span> 
+                  <span className="text-foreground">₱900.00</span>
+                </div>
+
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
+                    <Tag size={12} />
+                    Discount
+                  </span> 
+                  <span className="text-[12px] font-medium text-muted-foreground">- ₱28.00</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-muted-foreground text-sm">
+                <span>Delivery Charges</span>
+                <span className="">
+                  Calculated at checkout
+                </span>
+              </div>
+              
+              <div className="border-t border-border pt-4">
+                <div className="flex justify-between font-semibold">
+                  <span>Total</span>
+                  <span>₱872.00</span>
+                </div>
+              </div>
+            </div>
+
+            <Link href="/checkouts">
+              <Button className="w-full h-12 text-base mt-4">
+                Proceed to Checkout
+              </Button>
+            </Link>
+
+            {/* --- Inilipat ko ito sa loob ng Card para sumama sa sticky alignment --- */}
+            <div className="">
+              <div className="flex items-center justify-between border-b py-4">
+                <div className="flex gap-2 items-center">
+                  <LockKeyhole size={18}/>
+                  <h1 className="text-sm">Secure Payment</h1>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between border-b py-4">
+                <div className="flex gap-2 items-center">
+                  <ShieldCheck size={18}/>
+                  <h1 className="text-sm">Warranty</h1>
+                </div>
+                <div className="text-muted-foreground text-sm ">
+                  <span>2 years</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between border-b py-4">
+                <div className="flex gap-2 items-center">
+                  <MessageCircle size={18}/>
+                  <h1 className="text-sm">Customer Service</h1>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <span className="text-sm">Easy to contact us</span>
+                  <ChevronRight size={18} />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between py-4">
+                <div className="flex gap-2 items-center">
+                  <Box size={18}/>
+                  <h1 className="text-sm">Easy Return</h1>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  <span>15 days to change your mind</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+      </div>
     </div>
   );
 }
+
+{/*
+  Accordion para sa FAqs
+            <div className="px-2">
+              <Accordion type="single" collapsible className="w-full">
+                <TrustItem icon={<LockKeyhole size={16}/>} title="Secure Payment" content="Your data is protected by industry-standard encryption." />
+                <TrustItem icon={<ShieldCheck size={16}/>} title="Warranty" content="2-year warranty on all furniture collections." />
+                <TrustItem icon={<MessageCircle size={16}/>} title="Customer Service" content="Support available Mon-Fri, 9am - 6pm." />
+                <TrustItem icon={<Box size={16}/>} title="Easy Return" content="Hassle-free returns within 14 days of receipt." />
+              </Accordion>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Helper component for cleaner code
+function TrustItem({ icon, title, content }: { icon: React.ReactNode; title: string; content: string }) {
+  return (
+    <AccordionItem value={title} className="border-b border-border/50">
+      <AccordionTrigger className="py-4 hover:no-underline">
+        <div className="flex items-center gap-3">
+          <span className="text-muted-foreground">{icon}</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">{title}</span>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className="pb-4 text-[11px] leading-relaxed text-muted-foreground">
+        {content}
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+*/}

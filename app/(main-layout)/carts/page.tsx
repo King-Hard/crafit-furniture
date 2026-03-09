@@ -40,10 +40,11 @@ const cartItems = [
 
 export default function CartWithItems() {
   return (
-    <div className="mx-auto px-6 lg:px-12 py-12">
-      <h1 className="mb-8 font-serif text-foreground text-3xl lg:text-5xl tracking-tight">
-        Your Basket 
-      </h1>
+    <div className="mx-auto px-6 lg:px-12 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <header className="mb-12 text-center px-4">
+        <h1 className="font-serif text-foreground text-5xl lg:text-7xl tracking-tight">Basket</h1>
+        <div className="h-[1px] w-12 bg-foreground/20 mx-auto mt-6" />
+      </header>
 
       <div className="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-12">
         {/* --- LEFT SIDE: Product List --- */}
@@ -150,7 +151,7 @@ export default function CartWithItems() {
             </div>
 
             <Link href="/checkouts">
-              <Button className="w-full h-12 text-base mt-4">
+              <Button variant="outline" className="w-full h-12 text-xs uppercase tracking-widest font-bold mt-4">
                 Proceed to Checkout
               </Button>
             </Link>

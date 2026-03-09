@@ -51,9 +51,8 @@ const shippingOptions = [
 ];
 
 const paymentMethods = [
-  { id: "gcash", icon: Smartphone, label: "GCash",               detail: "Pay via GCash e-wallet" },
-  { id: "card",  icon: CreditCard, label: "Credit / Debit Card", detail: "Visa, Mastercard, JCB" },
-  { id: "cod",   icon: Banknote,   label: "Cash on Delivery",    detail: "Pay when your order arrives" },
+  { id: "paymongo", icon: Smartphone, label: "Online Payment", detail: "Pay via PayMongo" },
+  { id: "cod",   icon: Banknote,   label: "Cash on Delivery", detail: "Pay when your order arrives" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -123,7 +122,7 @@ export default function Checkout() {
 
             <Field>
               <FieldLabel htmlFor="regionAddress" className="text-[11px] font-bold uppercase tracking-wide">
-                Region, Province, City, Barangay
+                Region, Province, Municipality, Barangay
               </FieldLabel>
               <Input type="text" id="regionAddress" name="regionAddress" placeholder="e.g. Metro Manila, Bulacan, Baliuag City, Makinabang" required className="h-12 placeholder:text-base" />
             </Field>
@@ -261,7 +260,7 @@ export default function Checkout() {
             </div>
           </div>
 
-          <Button className="w-full h-12 text-base uppercase">
+          <Button variant="outline" className="w-full h-12 text-xs uppercase tracking-widest font-bold">
             Complete Purchase
           </Button>
         </div>
@@ -318,24 +317,16 @@ export default function Checkout() {
                   <span className="text-foreground">₱1,800.00</span>
                 </div>
 
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
-                    <Tag size={12} />
-                    Discount
-                  </span> 
-                  <span className="text-[12px] font-medium text-muted-foreground">- ₱28.00</span>
+                <div className="flex items-center justify-between text-muted-foreground text-sm pb-1">
+                  <span>Shipping</span>
+                  <span className="text-sm">₱100.00</span>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-between text-muted-foreground text-sm pb-1">
-                <span>Shipping</span>
-                <span className="text-sm">₱100.00</span>
               </div>
               
               <div className="border-t pt-4">
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>₱1,872.00</span>
+                  <span>₱1,900.00</span>
                 </div>
               </div>
             </div>

@@ -23,7 +23,7 @@ export default function Furniture() {
         <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
           <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
           <span className="opacity-50">/</span>
-          <Link href="/furniture" className="hover:text-foreground transition-colors">Furniture</Link>
+          <span className="text-foreground">Furniture</span>
         </div>
       </nav>
 
@@ -38,22 +38,22 @@ export default function Furniture() {
       </header>
 
       {/* 3. FILTER BUTTONS - Scrollable sa mobile para hindi mag-clutter */}
-      <div className="flex items-center justify-center py-6 gap-2 lg:gap-3">
-        <Button className="text-sm lg:text-base">See all</Button>
+      <div className="flex items-center justify-start lg:justify-center py-6 gap-2 lg:gap-3 overflow-x-auto px-6 lg:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">        
+        <Button className="text-sm lg:text-base shrink-0">See all</Button>
         <Link href="/chairs">
-          <Button variant="outline" className="text-sm lg:text-base">Chairs</Button>
+          <Button variant="outline" className="text-sm lg:text-base shrink-0">Chairs</Button>
         </Link>
 
         <Link href="/tables">
-          <Button variant="outline" className="text-sm lg:text-base">Tables</Button>
+          <Button variant="outline" className="text-sm lg:text-base shrink-0">Tables</Button>
         </Link>
 
         <Link href="/cabinets">
-          <Button variant="outline" className="text-sm lg:text-base">Cabinets</Button>
+          <Button variant="outline" className="text-sm lg:text-base shrink-0">Cabinets</Button>
         </Link>
 
         <Link href="/bed-frames">
-          <Button variant="outline" className="text-sm lg:text-base">Bed Frames</Button>
+          <Button variant="outline" className="text-sm lg:text-base shrink-0">Bed Frames</Button>
         </Link>
       </div>
 
@@ -72,34 +72,36 @@ export default function Furniture() {
 // 5. PRODUCT CARD
 function ProductCard({ product }: { product: any }) {
   return (
-    <div className="group flex flex-col cursor-pointer">
-      <div className="relative aspect-[3/4] overflow-hidden bg-accent/70">
-        {/* Category Badge - Para alam ng user kung anong klase ito */}
-        <div className="absolute top-4 left-4 z-10 text-[9px] uppercase tracking-widest bg-background/80 backdrop-blur-sm px-2 py-1 text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-          {product.category}
+    <Link href={`/furniture/${product.id}`}>
+      <div className="group flex flex-col cursor-pointer">
+        <div className="relative aspect-[3/4] overflow-hidden bg-accent/70">
+          {/* Category Badge - Para alam ng user kung anong klase ito */}
+          <div className="absolute top-4 left-4 z-10 text-[9px] uppercase tracking-widest bg-background/80 backdrop-blur-sm px-2 py-1 text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+            {product.category}
+          </div>
+
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/10 font-serif italic text-4xl">
+            Craftit
+          </div>
+
+          <Image
+            src={product.img}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-1000 group-hover:scale-110"
+          />
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/10 font-serif italic text-4xl">
-          Craftit
+        <div className="mt-5 flex flex-col gap-1 px-1">
+          <h3 className="text-foreground font-sans font-medium text-xs lg:text-sm uppercase tracking-wider">
+            {product.name}
+          </h3>
+          <div className="flex justify-between items-center">
+            <p className="text-muted-foreground text-[13px]">{product.price}</p>
+            <span className="text-[10px] text-muted-foreground/40 font-serif italic">Handcrafted</span>
+          </div>
         </div>
-
-        <Image
-          src={product.img}
-          alt={product.name}
-          fill
-          className="object-cover transition-transform duration-1000 group-hover:scale-110"
-        />
       </div>
-
-      <div className="mt-5 flex flex-col gap-1 px-1">
-        <h3 className="text-foreground font-sans font-medium text-xs lg:text-sm uppercase tracking-wider">
-          {product.name}
-        </h3>
-        <div className="flex justify-between items-center">
-           <p className="text-muted-foreground text-[13px]">{product.price}</p>
-           <span className="text-[10px] text-muted-foreground/40 font-serif italic">Handcrafted</span>
-        </div>
-      </div>
-    </div>
+    </Link>
   );
 }

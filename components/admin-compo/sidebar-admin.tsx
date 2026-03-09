@@ -12,21 +12,16 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar"
 import { 
-  Bell, 
-  CircleHelp,
+  BarChart2,
   CircleUser, 
+  ClipboardList, 
   EllipsisVertical,
-  Home,
   LayoutDashboard, 
   LogOut, 
-  Megaphone,
   MessageCircle, 
   Package, 
   Settings, 
   ShoppingBag, 
-  ShoppingCart,
-  Store,
-  Tag,
   UsersRound, 
   WandSparklesIcon,
 } from "lucide-react";
@@ -56,7 +51,7 @@ export default function AdminSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
-        {/* Main Navigation */}
+        {/* Main */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-medium text-muted-foreground">
             MAIN
@@ -70,12 +65,20 @@ export default function AdminSidebar() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Reports">
+                <Link href="/admin/reports" className="flex items-center gap-3">
+                  <BarChart2 size={18} />
+                  <span>Reports & Analytics</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         {/* Store Management */}
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-xs font-medium text-muted-foreground">
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground">
             STORE MANAGEMENT
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -87,7 +90,6 @@ export default function AdminSidebar() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Orders">
                 <Link href="/admin/orders" className="flex items-center gap-3">
@@ -96,47 +98,36 @@ export default function AdminSidebar() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Products">
-                <Link href="/admin/products" className="flex items-center gap-3">
-                  <Tag size={18} />
-                  <span>Products</span>
+              <SidebarMenuButton asChild tooltip="Customers">
+                <Link href="/admin/customers" className="flex items-center gap-3">
+                  <UsersRound size={18} />
+                  <span>Customers</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Customers">
-                <Link href="/admin/customers" className="flex  items-center gap-3">
-                  <UsersRound size={18} />
-                  <span>Customers</span>
+              <SidebarMenuButton asChild tooltip="Customize">
+                <Link href="/admin/customize-furniture" className="flex items-center gap-3">
+                  <WandSparklesIcon size={18} />
+                  <span>Customize Request</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* Sales & Marketing */}
+        {/* Delivery */}
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-xs font-medium text-muted-foreground">
-            SALES & MARKETING
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground">
+            DELIVERY MANAGEMENT
           </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Promotions">
-                <Link href="/admin/promotions" className="flex items-center gap-3">
-                  <Megaphone size={18} />
-                  <span>Promotions</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Customize Store">
-                <Link href="/admin/customize-furniture" className="flex items-center gap-3">
-                  <WandSparklesIcon size={18} />
-                  <span>Customize Furniture</span>
+              <SidebarMenuButton asChild tooltip="Delivery">
+                <Link href="/admin/delivery-status" className="flex items-center gap-3">
+                  <ClipboardList size={18} />
+                  <span>Delivery Status</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -145,7 +136,7 @@ export default function AdminSidebar() {
 
         {/* Communication */}
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-xs font-medium text-muted-foreground">
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground">
             COMMUNICATION
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -157,30 +148,15 @@ export default function AdminSidebar() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Notifications">
-                <Link href="/admin/notifications" className="flex items-center gap-3">
-                  <Bell size={18} />
-                  <span>Notifications</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* Support */}
-        <SidebarGroup className="mt-auto">
+        {/* Settings */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground">
+            SYSTEM
+          </SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Help Center">
-                <Link href="/admin/help" className="flex items-center gap-3">
-                  <CircleHelp size={18} />
-                  <span>Help Center</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Settings">
                 <Link href="/admin/settings" className="flex items-center gap-3">
@@ -193,7 +169,7 @@ export default function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer with User Menu */}
+      {/* Footer */}
       <SidebarFooter className="border-t">
         <div className="relative" ref={accountMenuRef}>
           <button
@@ -217,7 +193,7 @@ export default function AdminSidebar() {
             </div>
           </button>
 
-          {/* Account Dropdown Menu */}
+          {/* Account Dropdown */}
           {account && (
             <div className="absolute bottom-full left-0 w-full z-50 bg-popover border rounded-lg shadow-lg overflow-hidden mb-2">
               <div className="p-2 border-b">
@@ -233,35 +209,12 @@ export default function AdminSidebar() {
                   </div>
                 </div>
               </div>
-              
-              <div className="p-1">
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Profile">
-                    <Link href="/profile" className="flex items-center gap-3">
-                      <CircleUser size={18} />
-                      <span>Profile</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
 
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="AccountSettings">
-                    <Link href="/account-settings" className="flex items-center gap-3">
-                      <Settings size={18} />
-                      <span>Account Settings</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </div>
-              
               <div className="border-t p-1">
                 <SidebarMenuItem>
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => {
-                      setAccount(false);
-                      handleLogout();
-                    }} 
+                  <Button
+                    variant="ghost"
+                    onClick={() => { setAccount(false); handleLogout(); }}
                     className="w-full justify-start gap-3 px-3 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
                   >
                     <LogOut size={18} />

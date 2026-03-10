@@ -20,7 +20,7 @@ const navLinks = [
 
 const iconLinks = [
   { href: "/favorites", label: "Wishlist", icon: Heart },
-  { href: "/authentication", label: "Profile", icon: UserRound },
+  { href: "/profile", label: "Profile", icon: UserRound },
   { href: "/carts", label: "Cart", icon: Handbag },
 ];
 

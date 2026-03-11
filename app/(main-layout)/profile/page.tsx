@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -9,28 +9,27 @@ import {
   User, ShoppingBag, KeyRound, Camera,
   ChevronDown, X, MapPin,
   Package, Truck, CheckCircle, XCircle,
+  MessageCircle, Send, Image as ImageIcon,
 } from "lucide-react";
 
 type OrderStatus = "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
 type DeliveryStatus = "Preparing" | "Out for Delivery" | "Delivered" | "Rescheduled" | "Failed Delivery";
 
-interface OrderItem {
-  name: string;
-  qty: number;
-  price: number;
-  image: string;
+interface OrderItem { name: string; qty: number; price: number; image: string; }
+interface Order {
+  id: string; date: string; total: number;
+  orderStatus: OrderStatus; deliveryStatus: DeliveryStatus;
+  address: string; driver: string | null; scheduledDate: string;
+  items: OrderItem[];
 }
 
-interface Order {
+interface Message {
   id: string;
-  date: string;
-  total: number;
-  orderStatus: OrderStatus;
-  deliveryStatus: DeliveryStatus;
-  address: string;
-  driver: string | null;
-  scheduledDate: string;
-  items: OrderItem[];
+  sender: "customer" | "admin";
+  text?: string;
+  image?: string;
+  time: string;
+  orderRef?: { id: string; total: number; status: OrderStatus };
 }
 
 const orders: Order[] = [
@@ -49,19 +48,42 @@ const orders: Order[] = [
     orderStatus: "Delivered", deliveryStatus: "Delivered",
     address: "123 Rizal St., Baliuag, Bulacan",
     driver: "Manny Cruz", scheduledDate: "Mar 8, 2026",
-    items: [
-      { name: "Queen Bed Frame", qty: 1, price: 12000, image: "/bed1.jpg" },
-    ],
+    items: [{ name: "Queen Bed Frame", qty: 1, price: 12000, image: "/bed1.jpg" }],
   },
   {
     id: "ORD-003", date: "Mar 5, 2026", total: 4500,
     orderStatus: "Cancelled", deliveryStatus: "Preparing",
     address: "123 Rizal St., Baliuag, Bulacan",
     driver: null, scheduledDate: "Mar 6, 2026",
-    items: [
-      { name: "Office Chair", qty: 1, price: 4500, image: "/chair1.jpg" },
-    ],
+    items: [{ name: "Office Chair", qty: 1, price: 4500, image: "/chair1.jpg" }],
   },
+];
+
+const initialMessages: Message[] = [
+  {
+    id: "1", sender: "admin",
+    text: "Hello! Welcome to Craftit. How can we help you today?",
+    time: "Mar 9, 9:00 AM",
+  },
+  {
+    id: "2", sender: "customer",
+    text: "Hi! I wanted to ask about my order.",
+    time: "Mar 9, 9:02 AM",
+    orderRef: { id: "ORD-001", total: 23500, status: "Shipped" },
+  },
+  {
+    id: "3", sender: "admin",
+    text: "Of course! Your order ORD-001 is currently out for delivery and should arrive by Mar 10. Is there anything else you need?",
+    time: "Mar 9, 9:05 AM",
+  },
+];
+
+const quickReplies = [
+  "Where is my order?",
+  "I want to cancel my order.",
+  "Can I change my delivery address?",
+  "I have a question about my custom request.",
+  "I'd like to follow up on my quote.",
 ];
 
 const orderStatusStyles: Record<OrderStatus, string> = {
@@ -73,7 +95,6 @@ const orderStatusStyles: Record<OrderStatus, string> = {
 };
 
 const deliverySteps: DeliveryStatus[] = ["Preparing", "Out for Delivery", "Delivered"];
-
 function getStepIndex(status: DeliveryStatus) {
   if (status === "Failed Delivery" || status === "Rescheduled") return -1;
   return deliverySteps.indexOf(status);
@@ -81,6 +102,7 @@ function getStepIndex(status: DeliveryStatus) {
 
 const tabs = [
   { id: "orders", label: "My Orders", icon: ShoppingBag },
+  { id: "messages", label: "Messages", icon: MessageCircle },
   { id: "profile", label: "Profile Info", icon: User },
   { id: "security", label: "Security", icon: KeyRound },
 ];
@@ -91,6 +113,8 @@ export default function Profile() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatFileRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const [firstName, setFirstName] = useState("Maria");
   const [lastName, setLastName] = useState("Santos");
@@ -105,6 +129,17 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [inputText, setInputText] = useState("");
+  const [showQuickReplies, setShowQuickReplies] = useState(false);
+  const [showOrderPicker, setShowOrderPicker] = useState(false);
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages, activeTab]);
+
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -114,6 +149,36 @@ export default function Profile() {
   function handleSave() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
+  }
+
+  function sendMessage(text?: string, orderRef?: Message["orderRef"], image?: string) {
+    const msg: Message = {
+      id: Date.now().toString(),
+      sender: "customer",
+      text,
+      image,
+      orderRef,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+    setMessages((prev) => [...prev, msg]);
+    setInputText("");
+    setShowQuickReplies(false);
+    setShowOrderPicker(false);
+
+    setTimeout(() => {
+      setMessages((prev) => [...prev, {
+        id: (Date.now() + 1).toString(),
+        sender: "admin",
+        text: "Thank you for your message! Our team will get back to you shortly.",
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      }]);
+    }, 1200);
+  }
+
+  function handleChatImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    sendMessage(undefined, undefined, URL.createObjectURL(file));
   }
 
   return (
@@ -145,12 +210,12 @@ export default function Profile() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b mb-8">
+      <div className="flex gap-1 border-b mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-widest font-medium border-b-2 transition-colors -mb-px ${
+            className={`flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-widest font-medium border-b-2 transition-colors -mb-px shrink-0 ${
               activeTab === id
                 ? "border-foreground text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -182,7 +247,6 @@ export default function Profile() {
 
               return (
                 <div key={order.id} className="border rounded-xl overflow-hidden">
-                  {/* Order Header */}
                   <button
                     onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                     className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors text-left"
@@ -199,11 +263,8 @@ export default function Profile() {
                     </div>
                   </button>
 
-                  {/* Expanded Details */}
                   {isExpanded && (
                     <div className="border-t px-5 py-5 space-y-6">
-
-                      {/* Items */}
                       <div className="space-y-3">
                         {order.items.map((item, i) => (
                           <div key={i} className="flex items-center gap-4">
@@ -219,7 +280,6 @@ export default function Profile() {
                         ))}
                       </div>
 
-                      {/* Delivery Info */}
                       <div className="border-t pt-4 space-y-2">
                         <div className="flex items-start gap-2">
                           <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
@@ -233,60 +293,36 @@ export default function Profile() {
                         )}
                       </div>
 
-                      {/* Delivery Tracker */}
                       {!isCancelled && (
-                        <div className="border-t pt-6">
-                          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-6">
-                            Delivery Status
-                          </p>
-
+                        <div className="border-t pt-4">
+                          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-4">Delivery Status</p>
                           {isFailed ? (
                             <div className="flex items-center gap-2 text-red-500">
                               <XCircle size={16} />
                               <p className="text-sm font-medium">{order.deliveryStatus}</p>
                             </div>
                           ) : (
-                            <div className="relative flex justify-between items-center">
-
-                              {/* line */}
-                              <div className="absolute top-4 left-0 w-full h-[2px] bg-border" />
-
+                            <div className="flex items-center">
                               {deliverySteps.map((step, i) => {
                                 const isCompleted = i <= stepIndex;
                                 const isActive = i === stepIndex;
-
                                 const icons = [Package, Truck, CheckCircle];
                                 const StepIcon = icons[i];
-
                                 return (
-                                  <div key={step} className="relative z-10 flex flex-col items-center text-center w-full">
-
-                                    {/* circle */}
-                                    <div
-                                      className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all
-                                      ${
-                                        isCompleted
-                                          ? "bg-foreground text-background border-foreground"
-                                          : "bg-background text-muted-foreground border-border"
-                                      }
-                                      ${isActive ? "ring-2 ring-foreground ring-offset-2" : ""}
-                                      `}
-                                    >
-                                      <StepIcon size={15} />
+                                  <div key={step} className="flex items-center flex-1 last:flex-none">
+                                    <div className="flex flex-col items-center gap-1.5">
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                                        isCompleted ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
+                                      } ${isActive ? "ring-2 ring-offset-2 ring-foreground" : ""}`}>
+                                        <StepIcon size={14} />
+                                      </div>
+                                      <p className={`text-[10px] uppercase tracking-wide text-center ${isCompleted ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                                        {step}
+                                      </p>
                                     </div>
-
-                                    {/* label */}
-                                    <p
-                                      className={`text-[10px] mt-2 uppercase tracking-wide
-                                      ${
-                                        isCompleted
-                                          ? "text-foreground font-medium"
-                                          : "text-muted-foreground"
-                                      }
-                                      `}
-                                    >
-                                      {step}
-                                    </p>
+                                    {i < deliverySteps.length - 1 && (
+                                      <div className={`flex-1 h-[1px] mb-5 mx-2 ${i < stepIndex ? "bg-foreground" : "bg-border"}`} />
+                                    )}
                                   </div>
                                 );
                               })}
@@ -295,7 +331,6 @@ export default function Profile() {
                         </div>
                       )}
 
-                      {/* Cancel Button */}
                       {!isCancelled && order.orderStatus !== "Delivered" && (
                         <div className="border-t pt-4">
                           <Button
@@ -313,6 +348,143 @@ export default function Profile() {
               );
             })
           )}
+        </div>
+      )}
+
+      {/* MESSAGES TAB */}
+      {activeTab === "messages" && (
+        <div className="border rounded-xl overflow-hidden flex flex-col" style={{ height: "560px" }}>
+          {/* Chat Header */}
+          <div className="flex items-center gap-3 px-5 py-4 border-b bg-card shrink-0">
+            <div className="w-9 h-9 rounded-full bg-foreground flex items-center justify-center shrink-0">
+              <span className="text-background text-xs font-bold">C</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium">Craftit Support</p>
+              <p className="text-xs text-muted-foreground">Typically replies within a few hours</p>
+            </div>
+          </div>
+
+          {/* Messages — scroll happens here only */}
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto px-5 py-4 space-y-4"
+          >
+            {messages.map((msg) => {
+              const isCustomer = msg.sender === "customer";
+              return (
+                <div key={msg.id} className={`flex ${isCustomer ? "justify-end" : "justify-start"}`}>
+                  <div className="max-w-[75%] space-y-1">
+                    {msg.orderRef && (
+                      <div className={`border rounded-lg px-3 py-2.5 mb-1 text-xs ${isCustomer ? "bg-primary/10 border-primary/20" : "bg-muted border-border"}`}>
+                        <p className="font-medium uppercase tracking-wide">{msg.orderRef.id}</p>
+                        <p className="text-muted-foreground mt-0.5">₱{msg.orderRef.total.toLocaleString()}</p>
+                        <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[msg.orderRef.status]}`}>
+                          {msg.orderRef.status}
+                        </span>
+                      </div>
+                    )}
+                    {msg.image && (
+                      <div className="relative w-48 h-48 rounded-lg overflow-hidden">
+                        <Image src={msg.image} alt="attachment" fill className="object-cover" />
+                      </div>
+                    )}
+                    {msg.text && (
+                      <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                        isCustomer
+                          ? "bg-foreground text-background rounded-br-sm"
+                          : "bg-muted text-foreground rounded-bl-sm"
+                      }`}>
+                        {msg.text}
+                      </div>
+                    )}
+                    <p className={`text-[10px] text-muted-foreground px-1 ${isCustomer ? "text-right" : "text-left"}`}>
+                      {msg.time}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Quick Replies */} 
+          {showQuickReplies && (
+            <div className="border-t px-4 py-3 bg-muted/30 flex flex-wrap gap-2 shrink-0">
+              {quickReplies.map((reply) => (
+                <button
+                  key={reply}
+                  onClick={() => sendMessage(reply)}
+                  className="text-xs px-3 py-1.5 border rounded-full hover:bg-accent transition-colors"
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Order Picker */}
+          {showOrderPicker && (
+            <div className="border-t px-4 py-3 bg-muted/30 space-y-2 shrink-0">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Select an order to reference</p>
+              {orders.map((order) => (
+                <button
+                  key={order.id}
+                  onClick={() => sendMessage(
+                    `Hi, I have a question about ${order.id}.`,
+                    { id: order.id, total: order.total, status: order.orderStatus }
+                  )}
+                  className="w-full flex items-center justify-between px-3 py-2.5 border rounded-lg hover:bg-accent transition-colors text-left"
+                >
+                  <div>
+                    <p className="text-xs font-medium">{order.id}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{order.date} · ₱{order.total.toLocaleString()}</p>
+                  </div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[order.orderStatus]}`}>
+                    {order.orderStatus}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Input Bar */}
+          <div className="border-t px-4 py-3 flex items-center gap-2 bg-card shrink-0">
+            <button
+              onClick={() => { setShowQuickReplies((v) => !v); setShowOrderPicker(false); }}
+              className={`p-2 rounded-lg transition-colors ${showQuickReplies ? "bg-foreground text-background" : "hover:bg-muted text-muted-foreground"}`}
+              title="Quick replies"
+            >
+              <MessageCircle size={16} />
+            </button>
+            <button
+              onClick={() => { setShowOrderPicker((v) => !v); setShowQuickReplies(false); }}
+              className={`p-2 rounded-lg transition-colors ${showOrderPicker ? "bg-foreground text-background" : "hover:bg-muted text-muted-foreground"}`}
+              title="Reference an order"
+            >
+              <ShoppingBag size={16} />
+            </button>
+            <button
+              onClick={() => chatFileRef.current?.click()}
+              className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+              title="Attach image"
+            >
+              <ImageIcon size={16} />
+            </button>
+            <input ref={chatFileRef} type="file" accept="image/*" onChange={handleChatImage} className="hidden" />
+            <Input
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && inputText.trim()) sendMessage(inputText.trim()); }}
+              placeholder="Type a message..."
+            />
+            <button
+              onClick={() => { if (inputText.trim()) sendMessage(inputText.trim()); }}
+              disabled={!inputText.trim()}
+              className="p-2 rounded-lg bg-foreground text-background disabled:opacity-30 hover:opacity-80 transition-opacity"
+            >
+              <Send size={15} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -367,7 +539,6 @@ export default function Profile() {
               <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} className="h-12" placeholder="facebook.com/yourprofile" />
             </Field>
           </FieldGroup>
-
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
             {saved && <p className="text-xs text-green-600 dark:text-green-400">Changes saved!</p>}
             {!saved && <span />}
@@ -404,7 +575,6 @@ export default function Profile() {
               )}
             </Field>
           </FieldGroup>
-
           <Button
             disabled={!currentPassword || !newPassword || newPassword !== confirmPassword}
             className="w-full sm:w-auto h-11 px-8 text-xs uppercase tracking-widest"

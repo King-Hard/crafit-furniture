@@ -4,10 +4,10 @@ import Image from "next/image";
 
 // Pinagsama-samang data mula sa Chairs, Tables, Cabinets, at Beds
 const ALL_PRODUCTS = [
-  { id: 1, name: "Minimalist Lounge", price: "₱12,500", category: "Chairs", img: "/chair1.jpg" },
-  { id: 2, name: "Solid Oak Dining", price: "₱35,000", category: "Tables", img: "/t1.jpg" },
-  { id: 3, name: "Linear Sideboard", price: "₱28,000", category: "Cabinets", img: "/cab1.jpg" },
-  { id: 4, name: "Siesta Platform", price: "₱45,000", category: "Beds", img: "/bed1.jpg" },
+  { id: 1, name: "Minimalist Lounge", price: "₱12,500", category: "Chairs", img: "/chair1.png" },
+  { id: 2, name: "Solid Oak Dining", price: "₱35,000", category: "Tables", img: "/table1.png" },
+  { id: 3, name: "Linear Sideboard", price: "₱28,000", category: "Cabinets", img: "/cabinet1.png" },
+  { id: 4, name: "Siesta Platform", price: "₱45,000", category: "Beds", img: "/bed1.png" },
   { id: 5, name: "Artisan Stool", price: "₱8,200", category: "Chairs", img: "/chair2.jpg" },
   { id: 6, name: "Coffee Table Set", price: "₱12,500", category: "Tables", img: "/t2.jpg" },
   { id: 7, name: "Narra Wardrobe", price: "₱85,000", category: "Cabinets", img: "/cab2.jpg" },

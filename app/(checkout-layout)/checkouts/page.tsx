@@ -21,12 +21,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const cartItems = [
-  { id: 1, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/chair.jpg", color: "Forest Green" },
-  { id: 2, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/chair.jpg", color: "Forest Green" },
+  { id: 1, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/chair1.png", color: "Forest Green" },
+  { id: 2, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/cabinet1.png", color: "Forest Brown" },
   { id: 3, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/chair.jpg", color: "Forest Green" },
   { id: 4, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/chair.jpg", color: "Forest Green" },
 ];
@@ -76,28 +77,10 @@ export default function Checkout() {
         {/* ── LEFT SIDE ──────────────────────────────────────────────────────── */}
         <div className="lg:col-span-6 space-y-6">
 
-          {/* Section 1: Account */}
-          <div className="flex items-center gap-3 pb-4 border-b">
-            <Avatar className="h-9 w-9 shrink-0">
-              <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
-              <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                KP
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate leading-none">Kuya Pogi</p>
-              <p className="text-xs text-muted-foreground truncate mt-1">admin@craftit.com</p>
-            </div>
-            <button
-              onClick={() => router.push("/authentication")}
-              className="text-xs tracking-wide uppercase text-muted-foreground hover:text-destructive transition-colors whitespace-nowrap"
-            >
-              Not you? Sign out
-            </button>
-          </div>
 
           {/* Section 2: Delivery */}
           <FieldGroup>
+            <h2 className=" text-sm font-bold uppercase tracking-[0.15em]">Personal Information</h2>
             <div className="flex items-start gap-4">
               <Field className="flex-1">
                 <FieldLabel htmlFor="firstName" className="text-[11px] font-bold uppercase tracking-wide">
@@ -268,22 +251,40 @@ export default function Checkout() {
         {/* ── RIGHT SIDE: Order Summary ───────────────────────────────────────── */}
         <div className="lg:col-span-6">
           <Card className="sticky top-24 p-8">
-            <h2 className="uppercase tracking-[0.2em] ">Your Order</h2>
+            <h2 className="uppercase tracking-[0.2em] text-sm lg:text-base">Your Order</h2>
 
             {/* Product List */}
-            <div>
+            <div className="space-y-1">
               {visibleItems.map((item) => (
                 <div key={item.id} className="flex border-b border-border py-5 first:pt-0">
-                  <div className="h-20 w-16 flex-shrink-0 bg-accent" />
+                  
+                  {/* IMAGE CONTAINER - Updated with your custom background and Image component */}
+                  <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden bg-[#f7f7f7] dark:bg-[#1a1a1a]">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+
                   <div className="ml-4 flex flex-1 flex-col justify-center gap-1">
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <h3 className="text-sm font-medium uppercase tracking-widest text-foreground">{item.name}</h3>
-                        <p className="mt-1 text-xs text-muted-foreground">{item.color}</p>
+                        <h3 className="text-xs font-semibold uppercase tracking-widest text-foreground">
+                          {item.name}
+                        </h3>
+                        <p className="mt-1 text-[11px] text-muted-foreground italic">
+                          {item.color}
+                        </p>
                       </div>
-                      <p className="text-sm font-medium text-foreground">₱{item.price.toFixed(2)}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        ₱{item.price.toLocaleString()}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">Qty: {item.qty}</p>
+                    <p className="text-[10px] uppercase tracking-tighter text-muted-foreground">
+                      Quantity: {item.qty}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -295,13 +296,13 @@ export default function Checkout() {
                   onClick={() => setShowAllItems(!showAllItems)}
                   className="w-full flex items-center justify-between pt-4 group"
                 >
-                  <span className="text-xs uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">
-                    {showAllItems ? "Show less" : `View all ${cartItems.length} items`}
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors font-bold">
+                    {showAllItems ? "Show fewer items" : `View all ${cartItems.length} items`}
                   </span>
                   <ChevronRight
-                    size={18}
+                    size={16}
                     className={cn(
-                      "text-muted-foreground group-hover:text-foreground transition-all duration-200",
+                      "text-muted-foreground group-hover:text-foreground transition-all duration-300",
                       showAllItems ? "-rotate-90" : "rotate-90"
                     )}
                   />
@@ -309,31 +310,31 @@ export default function Checkout() {
               )}
             </div>
 
-            {/* Pricing */}
-            <div className="space-y-3 border-t pt-4">
-              <div>
-                <div className="flex justify-between text-muted-foreground font-medium">
+            {/* Pricing Section */}
+            <div className="space-y-3 border-t border-border pt-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-muted-foreground text-sm">
                   <span>Subtotal</span> 
                   <span className="text-foreground">₱1,800.00</span>
                 </div>
 
-                <div className="flex items-center justify-between text-muted-foreground text-sm pb-1">
-                  <span>Shipping</span>
-                  <span className="text-sm">₱100.00</span>
+                <div className="flex items-center justify-between text-muted-foreground text-sm">
+                  <span className="flex items-center gap-2">
+                    <Truck size={14} /> Shipping
+                  </span>
+                  <span className="text-foreground">₱100.00</span>
                 </div>
               </div>
               
-              <div className="border-t pt-4">
+              <div className="border-t border-foreground/10 pt-4">
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>₱1,900.00</span>
-                </div>
+                  <span>₱872.00</span>
+              </div>
               </div>
             </div>
-
           </Card>
         </div>
-
       </div>
     </div>
   );

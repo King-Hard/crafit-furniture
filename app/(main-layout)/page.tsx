@@ -80,21 +80,21 @@ export default function Home() {
               ensuring your home tells a story of quality that lasts generations.
             </p>  
 
-           <div className="pt-6 flex flex-col items-center gap-6">
-            <Link 
-              href="/about" 
-              className="group flex flex-col items-center gap-4 text-[12px] uppercase tracking-[0.2em] font-bold text-[#3E2723] dark:text-[#F3E5D8]"
-            >
-              <span className="border-b border-[#3E2723]/60 dark:border-[#F3E5D8]/60 transition-all duration-300 group-hover:text-[#A67B5B] dark:group-hover:text-[#D9A066] group-hover:border-[#A67B5B] dark:group-hover:border-[#D9A066]">
-                The Artisan Story
-              </span>
-              
-              <ChevronDown 
-                size={26} 
-                className="animate-pulse text-[#A67B5B] dark:text-[#D9A066] transition-opacity group-hover:opacity-80" 
-              />
-            </Link>
-          </div>
+            <div className="pt-6 flex flex-col items-center gap-6">
+              <Link 
+                href="/about" 
+                className="group flex flex-col items-center gap-4 text-[12px] uppercase tracking-[0.2em] font-bold text-[#3E2723] dark:text-[#F3E5D8]"
+              >
+                <span className="border-b border-[#3E2723]/60 dark:border-[#F3E5D8]/60 transition-all duration-300 group-hover:text-[#A67B5B] dark:group-hover:text-[#D9A066] group-hover:border-[#A67B5B] dark:group-hover:border-[#D9A066]">
+                  The Artisan Story
+                </span>
+                
+                <ChevronDown 
+                  size={26} 
+                  className="animate-pulse text-[#A67B5B] dark:text-[#D9A066] transition-opacity group-hover:opacity-80" 
+                />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

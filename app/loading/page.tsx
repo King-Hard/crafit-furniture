@@ -7,7 +7,7 @@ import { GiHandSaw } from "react-icons/gi";
 export default function GlobalLoading() {
   useEffect(() => {
     const timer = setTimeout(() => {
-      window.location.href = "/";
+      window.location.href = "/onboarding";
     }, 3000);
 
     return () => clearTimeout(timer);

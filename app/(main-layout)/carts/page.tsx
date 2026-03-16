@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Box, ChevronRight, Heart, LockKeyhole, MessageCircle, Minus, Plus, ShieldCheck, Tag, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const cartItems = [
   {
@@ -9,16 +10,16 @@ const cartItems = [
     name: "Velvet Lounge Chair",
     price: 450,
     qty: 1,
-    image: "/chair.jpg",
+    image: "/chair1.png",
     color: "Forest Green",
   },
   {
     id: 2,
-    name: "Velvet Lounge Chair",
+    name: "Linear Sideboard",
     price: 450,
     qty: 1,
-    image: "/chair.jpg",
-    color: "Forest Green",
+    image: "/cabinet1.png",
+    color: "Forest Brown",
   },
   {
     id: 3,
@@ -54,9 +55,14 @@ export default function CartWithItems() {
               key={item.id}
               className="flex border-b border-border py-8 first:border-t"
             >
-              {/* Image Placeholder */}
-              <div className="h-40 w-32 flex-shrink-0 bg-accent sm:h-52 sm:w-40">
-                <div className="h-full w-full object-cover" />
+              {/* Image Container - Updated to use Next.js Image */}
+              <div className="relative h-40 w-32 flex-shrink-0 overflow-hidden bg-[#f7f7f7] dark:bg-[#1a1a1a] sm:h-52 sm:w-40">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                />
               </div>
 
               <div className="ml-6 flex flex-1 flex-col justify-between">
@@ -76,7 +82,7 @@ export default function CartWithItems() {
                 </div>
 
                 <div className="flex items-center justify-between mt-4">
-                  {/* Quantity Selector - Minimal Style */}
+                  {/* Quantity Selector */}
                   <div className="flex items-center border border-input rounded-sm">
                     <Button 
                       variant="ghost" 
@@ -115,7 +121,7 @@ export default function CartWithItems() {
         {/* --- RIGHT SIDE: Summary --- */}
         <div className="lg:col-span-4">
           <Card className="sticky top-24 p-8">
-            <h2 className="uppercase tracking-[0.2em] ">
+            <h2 className="uppercase tracking-[0.2em] text-sm lg:text-base">
               Order Summary
             </h2>
 
@@ -123,23 +129,13 @@ export default function CartWithItems() {
               <div>
                 <div className="flex justify-between text-muted-foreground font-medium">
                   <span>Subtotal</span> 
-                  <span className="text-foreground">₱900.00</span>
+                  <span className="text-foreground">₱1,800.00</span>
                 </div>
 
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
-                    <Tag size={12} />
-                    Discount
-                  </span> 
-                  <span className="text-[12px] font-medium text-muted-foreground">- ₱28.00</span>
+                <div className="flex items-center justify-between text-muted-foreground text-sm pb-1">
+                  <span>Delivery Charges</span>
+                  <span className="text-sm">Calculated at Checkout</span>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-between text-muted-foreground text-sm">
-                <span>Delivery Charges</span>
-                <span className="">
-                  Calculated at checkout
-                </span>
               </div>
               
               <div className="border-t border-border pt-4">
@@ -156,8 +152,7 @@ export default function CartWithItems() {
               </Button>
             </Link>
 
-            {/* --- Inilipat ko ito sa loob ng Card para sumama sa sticky alignment --- */}
-            <div className="">
+            <div>
               <div className="flex items-center justify-between border-b py-4">
                 <div className="flex gap-2 items-center">
                   <LockKeyhole size={18}/>
@@ -170,7 +165,7 @@ export default function CartWithItems() {
                   <ShieldCheck size={18}/>
                   <h1 className="text-sm">Warranty</h1>
                 </div>
-                <div className="text-muted-foreground text-sm ">
+                <div className="text-muted-foreground text-sm">
                   <span>2 years</span>
                 </div>
               </div>
@@ -198,43 +193,7 @@ export default function CartWithItems() {
             </div>
           </Card>
         </div>
-
       </div>
     </div>
   );
 }
-
-{/*
-  Accordion para sa FAqs
-            <div className="px-2">
-              <Accordion type="single" collapsible className="w-full">
-                <TrustItem icon={<LockKeyhole size={16}/>} title="Secure Payment" content="Your data is protected by industry-standard encryption." />
-                <TrustItem icon={<ShieldCheck size={16}/>} title="Warranty" content="2-year warranty on all furniture collections." />
-                <TrustItem icon={<MessageCircle size={16}/>} title="Customer Service" content="Support available Mon-Fri, 9am - 6pm." />
-                <TrustItem icon={<Box size={16}/>} title="Easy Return" content="Hassle-free returns within 14 days of receipt." />
-              </Accordion>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Helper component for cleaner code
-function TrustItem({ icon, title, content }: { icon: React.ReactNode; title: string; content: string }) {
-  return (
-    <AccordionItem value={title} className="border-b border-border/50">
-      <AccordionTrigger className="py-4 hover:no-underline">
-        <div className="flex items-center gap-3">
-          <span className="text-muted-foreground">{icon}</span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">{title}</span>
-        </div>
-      </AccordionTrigger>
-      <AccordionContent className="pb-4 text-[11px] leading-relaxed text-muted-foreground">
-        {content}
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
-*/}

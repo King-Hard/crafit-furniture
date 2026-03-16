@@ -27,7 +27,7 @@ export default function Footer() {
               { label: "Craftit", href: "/" },
               { label: "Furniture", href: "/furniture" },
               { label: "Favorites", href: "/favorites" },
-              { label: "Cart", href: "/cart" }
+              { label: "Cart", href: "/carts" }
             ]} />
             <FooterLinkGroup title="Need Help?" links={[
               { label: "Help & Contact", href: "#" },

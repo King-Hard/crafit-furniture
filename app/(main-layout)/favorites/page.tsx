@@ -79,7 +79,12 @@ export default function Favorites() {
                         onClick={() => removeItem(item.id)}
                         className="h-10 w-10 shrink-0 text-muted-foreground hover:text-destructive hover:border-destructive transition-colors group/trash"
                       >
-                        <Trash2 size={16} className="group-hover/trash:scale-110 transition-transform" />
+                        <Heart 
+                          
+                          fill="#ef4444"
+                          stroke="#ef4444" 
+                          className="group-hover/trash:scale-110 transition-transform" 
+                        />
                       </Button>
                     </div>
                   </div>

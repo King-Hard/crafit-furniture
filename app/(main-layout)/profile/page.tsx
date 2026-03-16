@@ -10,10 +10,12 @@ import {
   ChevronDown, X, MapPin,
   Package, Truck, CheckCircle, XCircle,
   MessageCircle, Send, Image as ImageIcon,
+  WandSparkles, ChevronRight,
 } from "lucide-react";
 
 type OrderStatus = "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
 type DeliveryStatus = "Preparing" | "Out for Delivery" | "Delivered" | "Rescheduled" | "Failed Delivery";
+type RequestStatus = "Pending Review" | "Quoted" | "Approved" | "In Production" | "Completed" | "Rejected";
 
 interface OrderItem { name: string; qty: number; price: number; image: string; }
 interface Order {
@@ -21,6 +23,19 @@ interface Order {
   orderStatus: OrderStatus; deliveryStatus: DeliveryStatus;
   address: string; driver: string | null; scheduledDate: string;
   items: OrderItem[];
+}
+
+interface CustomRequest {
+  id: string;
+  date: string;
+  item: string;
+  budget: string;
+  status: RequestStatus;
+  quote: string | null;
+  materials: string[];
+  dimensions: { width: string; depth: string; height: string } | null;
+  message: string;
+  image: string | null;
 }
 
 interface Message {
@@ -32,6 +47,7 @@ interface Message {
   orderRef?: { id: string; total: number; status: OrderStatus };
 }
 
+// --- Data ---
 const orders: Order[] = [
   {
     id: "ORD-001", date: "Mar 9, 2026", total: 23500,
@@ -59,23 +75,65 @@ const orders: Order[] = [
   },
 ];
 
+const customRequests: CustomRequest[] = [
+  {
+    id: "REQ-001",
+    date: "Mar 8, 2026",
+    item: "L-Shape Sofa",
+    budget: "₱25,000 – ₱50,000",
+    status: "Quoted",
+    quote: "₱38,500",
+    materials: ["Fabric Upholstery", "Metal Frame"],
+    dimensions: { width: '96"', depth: '60"', height: '32"' },
+    message: "I want a gray L-shape sofa with wooden legs and removable covers.",
+    image: null,
+  },
+  {
+    id: "REQ-002",
+    date: "Mar 5, 2026",
+    item: "Study Desk with Shelves",
+    budget: "₱10,000 – ₱25,000",
+    status: "In Production",
+    quote: "₱18,000",
+    materials: ["Plywood / Laminate"],
+    dimensions: { width: '48"', depth: '24"', height: '30"' },
+    message: "White laminated desk with overhead shelves for books and PC setup.",
+    image: null,
+  },
+  {
+    id: "REQ-003",
+    date: "Feb 28, 2026",
+    item: "Narra Wood Cabinet",
+    budget: "₱50,000 – ₱100,000",
+    status: "Completed",
+    quote: "₱72,000",
+    materials: ["Narra Wood"],
+    dimensions: { width: '60"', depth: '20"', height: '84"' },
+    message: "Full-height narra wood display cabinet with glass panel doors.",
+    image: null,
+  },
+];
+
+const requestStatusStyles: Record<RequestStatus, string> = {
+  "Pending Review": "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  "Quoted": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  "Approved": "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  "In Production": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  "Completed": "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  "Rejected": "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+};
+
+const requestSteps: RequestStatus[] = ["Pending Review", "Quoted", "Approved", "In Production", "Completed"];
+
+function getRequestStepIndex(status: RequestStatus) {
+  if (status === "Rejected") return -1;
+  return requestSteps.indexOf(status);
+}
+
 const initialMessages: Message[] = [
-  {
-    id: "1", sender: "admin",
-    text: "Hello! Welcome to Craftit. How can we help you today?",
-    time: "Mar 9, 9:00 AM",
-  },
-  {
-    id: "2", sender: "customer",
-    text: "Hi! I wanted to ask about my order.",
-    time: "Mar 9, 9:02 AM",
-    orderRef: { id: "ORD-001", total: 23500, status: "Shipped" },
-  },
-  {
-    id: "3", sender: "admin",
-    text: "Of course! Your order ORD-001 is currently out for delivery and should arrive by Mar 10. Is there anything else you need?",
-    time: "Mar 9, 9:05 AM",
-  },
+  { id: "1", sender: "admin", text: "Hello! Welcome to Craftit. How can we help you today?", time: "Mar 9, 9:00 AM" },
+  { id: "2", sender: "customer", text: "Hi! I wanted to ask about my order.", time: "Mar 9, 9:02 AM", orderRef: { id: "ORD-001", total: 23500, status: "Shipped" } },
+  { id: "3", sender: "admin", text: "Of course! Your order ORD-001 is currently out for delivery and should arrive by Mar 10. Is there anything else you need?", time: "Mar 9, 9:05 AM" },
 ];
 
 const quickReplies = [
@@ -102,6 +160,7 @@ function getStepIndex(status: DeliveryStatus) {
 
 const tabs = [
   { id: "orders", label: "My Orders", icon: ShoppingBag },
+  { id: "requests", label: "My Requests", icon: WandSparkles },
   { id: "messages", label: "Messages", icon: MessageCircle },
   { id: "profile", label: "Profile Info", icon: User },
   { id: "security", label: "Security", icon: KeyRound },
@@ -110,6 +169,7 @@ const tabs = [
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("orders");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -155,16 +215,13 @@ export default function Profile() {
     const msg: Message = {
       id: Date.now().toString(),
       sender: "customer",
-      text,
-      image,
-      orderRef,
+      text, image, orderRef,
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
     setMessages((prev) => [...prev, msg]);
     setInputText("");
     setShowQuickReplies(false);
     setShowOrderPicker(false);
-
     setTimeout(() => {
       setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(),
@@ -183,6 +240,7 @@ export default function Profile() {
 
   return (
     <div className="mx-auto px-6 lg:px-12 py-12 max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+
       {/* Header */}
       <div className="flex items-center gap-5 mb-10">
         <div className="relative">
@@ -190,15 +248,10 @@ export default function Profile() {
             {avatarPreview ? (
               <Image src={avatarPreview} alt="Avatar" fill className="object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-xl font-semibold text-muted-foreground">
-                MS
-              </div>
+              <div className="w-full h-full flex items-center justify-center text-xl font-semibold text-muted-foreground">MS</div>
             )}
           </div>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute bottom-0 right-0 w-6 h-6 bg-foreground text-background rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
-          >
+          <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 w-6 h-6 bg-foreground text-background rounded-full flex items-center justify-center hover:opacity-80 transition-opacity">
             <Camera size={11} />
           </button>
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
@@ -216,9 +269,7 @@ export default function Profile() {
             key={id}
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-widest font-medium border-b-2 transition-colors -mb-px shrink-0 ${
-              activeTab === id
-                ? "border-foreground text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+              activeTab === id ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <Icon size={14} className="hidden sm:block" />
@@ -234,9 +285,7 @@ export default function Profile() {
             <div className="flex flex-col items-center justify-center py-24 gap-4">
               <ShoppingBag size={40} className="text-muted-foreground/30" strokeWidth={1.5} />
               <p className="text-muted-foreground text-sm">No orders yet.</p>
-              <Button variant="outline" className="w-full sm:w-auto text-xs uppercase tracking-widest h-10 px-6">
-                Start Shopping
-              </Button>
+              <Button variant="outline" className="w-full sm:w-auto text-xs uppercase tracking-widest h-10 px-6">Start Shopping</Button>
             </div>
           ) : (
             orders.map((order) => {
@@ -247,18 +296,13 @@ export default function Profile() {
 
               return (
                 <div key={order.id} className="border rounded-xl overflow-hidden">
-                  <button
-                    onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
-                    className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors text-left"
-                  >
+                  <button onClick={() => setExpandedOrder(isExpanded ? null : order.id)} className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors text-left">
                     <div>
                       <p className="text-sm font-medium">{order.id}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{order.date} · ₱{order.total.toLocaleString()}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[order.orderStatus]}`}>
-                        {order.orderStatus}
-                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[order.orderStatus]}`}>{order.orderStatus}</span>
                       <ChevronDown size={15} className={`text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                     </div>
                   </button>
@@ -311,14 +355,10 @@ export default function Profile() {
                                 return (
                                   <div key={step} className="flex items-center flex-1 last:flex-none">
                                     <div className="flex flex-col items-center gap-1.5">
-                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                                        isCompleted ? "bg-foreground text-background" : "bg-muted text-muted-foreground"
-                                      } ${isActive ? "ring-2 ring-offset-2 ring-foreground" : ""}`}>
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isCompleted ? "bg-foreground text-background" : "bg-muted text-muted-foreground"} ${isActive ? "ring-2 ring-offset-2 ring-foreground" : ""}`}>
                                         <StepIcon size={14} />
                                       </div>
-                                      <p className={`text-[10px] uppercase tracking-wide text-center ${isCompleted ? "text-foreground font-medium" : "text-muted-foreground"}`}>
-                                        {step}
-                                      </p>
+                                      <p className={`text-[10px] uppercase tracking-wide text-center ${isCompleted ? "text-foreground font-medium" : "text-muted-foreground"}`}>{step}</p>
                                     </div>
                                     {i < deliverySteps.length - 1 && (
                                       <div className={`flex-1 h-[1px] mb-5 mx-2 ${i < stepIndex ? "bg-foreground" : "bg-border"}`} />
@@ -333,13 +373,138 @@ export default function Profile() {
 
                       {!isCancelled && order.orderStatus !== "Delivered" && (
                         <div className="border-t pt-4">
-                          <Button
-                            variant="outline"
-                            className="w-full sm:w-auto text-xs uppercase tracking-widest h-9 px-5 text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600"
-                          >
-                            <X size={13} className="mr-2" />
-                            Cancel Order
+                          <Button variant="outline" className="w-full sm:w-auto text-xs uppercase tracking-widest h-9 px-5 text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600">
+                            <X size={13} className="mr-2" />Cancel Order
                           </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* MY REQUESTS TAB */}
+      {activeTab === "requests" && (
+        <div className="space-y-4">
+          {customRequests.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-4">
+              <WandSparkles size={40} className="text-muted-foreground/30" strokeWidth={1.5} />
+              <p className="text-muted-foreground text-sm">No custom requests yet.</p>
+              <Button variant="outline" className="w-full sm:w-auto text-xs uppercase tracking-widest h-10 px-6">Make a Request</Button>
+            </div>
+          ) : (
+            customRequests.map((req) => {
+              const isExpanded = expandedRequest === req.id;
+              const stepIndex = getRequestStepIndex(req.status);
+              const isRejected = req.status === "Rejected";
+              const isCompleted = req.status === "Completed";
+
+              return (
+                <div key={req.id} className="border rounded-xl overflow-hidden">
+                  {/* Request Header */}
+                  <button onClick={() => setExpandedRequest(isExpanded ? null : req.id)} className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors text-left">
+                    <div>
+                      <p className="text-sm font-medium">{req.item}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{req.id} · {req.date}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${requestStatusStyles[req.status]}`}>{req.status}</span>
+                      <ChevronDown size={15} className={`text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                    </div>
+                  </button>
+
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <div className="border-t px-5 py-5 space-y-6">
+
+                      {/* Quote Banner — show if quoted */}
+                      {req.quote && !isRejected && (
+                        <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg px-4 py-3 flex items-center justify-between">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-widest text-green-600 dark:text-green-400 font-medium">Quote from Craftit</p>
+                            <p className="text-xl font-semibold text-green-700 dark:text-green-300 mt-0.5">{req.quote}</p>
+                          </div>
+                          {req.status === "Quoted" && (
+                            <Button className="h-9 px-5 text-xs uppercase tracking-widest">Accept</Button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Rejected Banner */}
+                      {isRejected && (
+                        <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3 flex items-center gap-3">
+                          <XCircle size={16} className="text-red-500 shrink-0" />
+                          <p className="text-xs text-red-600 dark:text-red-400">This request was not accepted. Feel free to submit a new one.</p>
+                        </div>
+                      )}
+
+                      {/* Request Tracker */}
+                      {!isRejected && (
+                        <div>
+                          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-4">Request Progress</p>
+                          <div className="flex items-center">
+                            {requestSteps.map((step, i) => {
+                              const isStepCompleted = i <= stepIndex;
+                              const isStepActive = i === stepIndex;
+                              return (
+                                <div key={step} className="flex items-center flex-1 last:flex-none">
+                                  <div className="flex flex-col items-center gap-1.5">
+                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${isStepCompleted ? "bg-foreground text-background" : "bg-muted text-muted-foreground"} ${isStepActive ? "ring-2 ring-offset-2 ring-foreground" : ""}`}>
+                                      {i + 1}
+                                    </div>
+                                    <p className={`text-[9px] uppercase tracking-wide text-center leading-tight max-w-[52px] ${isStepCompleted ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                                      {step === "Pending Review" ? "Review" : step === "In Production" ? "Production" : step}
+                                    </p>
+                                  </div>
+                                  {i < requestSteps.length - 1 && (
+                                    <div className={`flex-1 h-[1px] mb-5 mx-1 ${i < stepIndex ? "bg-foreground" : "bg-border"}`} />
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Request Details */}
+                      <div className="border-t pt-4 grid grid-cols-2 gap-x-6 gap-y-3">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Budget</p>
+                          <p className="text-sm font-medium mt-0.5">{req.budget}</p>
+                        </div>
+                        {req.dimensions && (
+                          <div>
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Dimensions</p>
+                            <p className="text-sm font-medium mt-0.5">{req.dimensions.width} × {req.dimensions.depth} × {req.dimensions.height}</p>
+                          </div>
+                        )}
+                        <div className="col-span-2">
+                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Materials</p>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {req.materials.map((m) => (
+                              <span key={m} className="text-[10px] px-2 py-0.5 border rounded-sm">{m}</span>
+                            ))}
+                          </div>
+                        </div>
+                        {req.message && (
+                          <div className="col-span-2">
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Details</p>
+                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{req.message}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Reference Image */}
+                      {req.image && (
+                        <div className="border-t pt-4">
+                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Reference Image</p>
+                          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-accent">
+                            <Image src={req.image} alt="Reference" fill className="object-cover" />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -354,7 +519,6 @@ export default function Profile() {
       {/* MESSAGES TAB */}
       {activeTab === "messages" && (
         <div className="border rounded-xl overflow-hidden flex flex-col" style={{ height: "560px" }}>
-          {/* Chat Header */}
           <div className="flex items-center gap-3 px-5 py-4 border-b bg-card shrink-0">
             <div className="w-9 h-9 rounded-full bg-foreground flex items-center justify-center shrink-0">
               <span className="text-background text-xs font-bold">C</span>
@@ -365,11 +529,7 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Messages — scroll happens here only */}
-          <div
-            ref={messagesContainerRef}
-            className="flex-1 overflow-y-auto px-5 py-4 space-y-4"
-          >
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {messages.map((msg) => {
               const isCustomer = msg.sender === "customer";
               return (
@@ -379,9 +539,7 @@ export default function Profile() {
                       <div className={`border rounded-lg px-3 py-2.5 mb-1 text-xs ${isCustomer ? "bg-primary/10 border-primary/20" : "bg-muted border-border"}`}>
                         <p className="font-medium uppercase tracking-wide">{msg.orderRef.id}</p>
                         <p className="text-muted-foreground mt-0.5">₱{msg.orderRef.total.toLocaleString()}</p>
-                        <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[msg.orderRef.status]}`}>
-                          {msg.orderRef.status}
-                        </span>
+                        <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[msg.orderRef.status]}`}>{msg.orderRef.status}</span>
                       </div>
                     )}
                     {msg.image && (
@@ -390,98 +548,53 @@ export default function Profile() {
                       </div>
                     )}
                     {msg.text && (
-                      <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                        isCustomer
-                          ? "bg-foreground text-background rounded-br-sm"
-                          : "bg-muted text-foreground rounded-bl-sm"
-                      }`}>
+                      <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${isCustomer ? "bg-foreground text-background rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm"}`}>
                         {msg.text}
                       </div>
                     )}
-                    <p className={`text-[10px] text-muted-foreground px-1 ${isCustomer ? "text-right" : "text-left"}`}>
-                      {msg.time}
-                    </p>
+                    <p className={`text-[10px] text-muted-foreground px-1 ${isCustomer ? "text-right" : "text-left"}`}>{msg.time}</p>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Quick Replies */} 
           {showQuickReplies && (
             <div className="border-t px-4 py-3 bg-muted/30 flex flex-wrap gap-2 shrink-0">
               {quickReplies.map((reply) => (
-                <button
-                  key={reply}
-                  onClick={() => sendMessage(reply)}
-                  className="text-xs px-3 py-1.5 border rounded-full hover:bg-accent transition-colors"
-                >
-                  {reply}
-                </button>
+                <button key={reply} onClick={() => sendMessage(reply)} className="text-xs px-3 py-1.5 border rounded-full hover:bg-accent transition-colors">{reply}</button>
               ))}
             </div>
           )}
 
-          {/* Order Picker */}
           {showOrderPicker && (
             <div className="border-t px-4 py-3 bg-muted/30 space-y-2 shrink-0">
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Select an order to reference</p>
               {orders.map((order) => (
-                <button
-                  key={order.id}
-                  onClick={() => sendMessage(
-                    `Hi, I have a question about ${order.id}.`,
-                    { id: order.id, total: order.total, status: order.orderStatus }
-                  )}
-                  className="w-full flex items-center justify-between px-3 py-2.5 border rounded-lg hover:bg-accent transition-colors text-left"
-                >
+                <button key={order.id} onClick={() => sendMessage(`Hi, I have a question about ${order.id}.`, { id: order.id, total: order.total, status: order.orderStatus })} className="w-full flex items-center justify-between px-3 py-2.5 border rounded-lg hover:bg-accent transition-colors text-left">
                   <div>
                     <p className="text-xs font-medium">{order.id}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{order.date} · ₱{order.total.toLocaleString()}</p>
                   </div>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[order.orderStatus]}`}>
-                    {order.orderStatus}
-                  </span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[order.orderStatus]}`}>{order.orderStatus}</span>
                 </button>
               ))}
             </div>
           )}
 
-          {/* Input Bar */}
           <div className="border-t px-4 py-3 flex items-center gap-2 bg-card shrink-0">
-            <button
-              onClick={() => { setShowQuickReplies((v) => !v); setShowOrderPicker(false); }}
-              className={`p-2 rounded-lg transition-colors ${showQuickReplies ? "bg-foreground text-background" : "hover:bg-muted text-muted-foreground"}`}
-              title="Quick replies"
-            >
+            <button onClick={() => { setShowQuickReplies((v) => !v); setShowOrderPicker(false); }} className={`p-2 rounded-lg transition-colors ${showQuickReplies ? "bg-foreground text-background" : "hover:bg-muted text-muted-foreground"}`}>
               <MessageCircle size={16} />
             </button>
-            <button
-              onClick={() => { setShowOrderPicker((v) => !v); setShowQuickReplies(false); }}
-              className={`p-2 rounded-lg transition-colors ${showOrderPicker ? "bg-foreground text-background" : "hover:bg-muted text-muted-foreground"}`}
-              title="Reference an order"
-            >
+            <button onClick={() => { setShowOrderPicker((v) => !v); setShowQuickReplies(false); }} className={`p-2 rounded-lg transition-colors ${showOrderPicker ? "bg-foreground text-background" : "hover:bg-muted text-muted-foreground"}`}>
               <ShoppingBag size={16} />
             </button>
-            <button
-              onClick={() => chatFileRef.current?.click()}
-              className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
-              title="Attach image"
-            >
+            <button onClick={() => chatFileRef.current?.click()} className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors">
               <ImageIcon size={16} />
             </button>
             <input ref={chatFileRef} type="file" accept="image/*" onChange={handleChatImage} className="hidden" />
-            <Input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && inputText.trim()) sendMessage(inputText.trim()); }}
-              placeholder="Type a message..."
-            />
-            <button
-              onClick={() => { if (inputText.trim()) sendMessage(inputText.trim()); }}
-              disabled={!inputText.trim()}
-              className="p-2 rounded-lg bg-foreground text-background disabled:opacity-30 hover:opacity-80 transition-opacity"
-            >
+            <Input value={inputText} onChange={(e) => setInputText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && inputText.trim()) sendMessage(inputText.trim()); }} placeholder="Type a message..." />
+            <button onClick={() => { if (inputText.trim()) sendMessage(inputText.trim()); }} disabled={!inputText.trim()} className="p-2 rounded-lg bg-foreground text-background disabled:opacity-30 hover:opacity-80 transition-opacity">
               <Send size={15} />
             </button>
           </div>
@@ -490,8 +603,9 @@ export default function Profile() {
 
       {/* PROFILE INFO TAB */}
       {activeTab === "profile" && (
-        <div className="max-w-2xl space-y-6">
-          <FieldGroup>
+        <div className="max-w-2xl text-left"> 
+          <FieldGroup> 
+            {/* Personal Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">First Name</FieldLabel>
@@ -505,10 +619,23 @@ export default function Profile() {
                 <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Email</FieldLabel>
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12" />
               </Field>
+
               <Field>
-                <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Phone</FieldLabel>
-                <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="h-12" placeholder="0917 123 4567" />
+                <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Phone Number</FieldLabel>
+                <Input 
+                  type="tel" 
+                  inputMode="numeric" 
+                  value={phone} 
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, ""); 
+                    setPhone(value);
+                  }} 
+                  className="h-12" 
+                  placeholder="09171234567" 
+                  maxLength={11}
+                />
               </Field>
+
               <Field>
                 <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Date of Birth</FieldLabel>
                 <Input type="date" value={dob} onChange={(e) => setDob(e.target.value)} className="h-12" />
@@ -516,9 +643,9 @@ export default function Profile() {
               <Field>
                 <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Gender</FieldLabel>
                 <div className="relative">
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
+                  <select 
+                    value={gender} 
+                    onChange={(e) => setGender(e.target.value)} 
                     className="w-full h-12 px-3 pr-10 text-sm border bg-background rounded-lg appearance-none focus:outline-none focus:ring-1 focus:ring-ring"
                   >
                     <option value="" disabled>Select gender</option>
@@ -530,21 +657,30 @@ export default function Profile() {
                 </div>
               </Field>
             </div>
+
+            {/* Delivery Address */}
             <Field>
               <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Delivery Address</FieldLabel>
               <Input value={address} onChange={(e) => setAddress(e.target.value)} className="h-12" placeholder="House No., Street, Barangay, City, Province" />
             </Field>
-            <Field>
-              <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Facebook / Messenger</FieldLabel>
-              <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} className="h-12" placeholder="facebook.com/yourprofile" />
-            </Field>
           </FieldGroup>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
-            {saved && <p className="text-xs text-green-600 dark:text-green-400">Changes saved!</p>}
-            {!saved && <span />}
-            <Button onClick={handleSave} className="w-full sm:w-auto h-11 px-8 text-xs uppercase tracking-widest">
+
+          {/* Action Section */}
+          <div className="flex flex-col pt-6"> {/* items-start aligns button/text to the left */}
+            <Button 
+              onClick={handleSave} 
+              className="w-full h-12 text-xs uppercase tracking-widest font-bold"
+            >
               Save Changes
             </Button>
+            
+            <div className="h-5"> {/* Removed text-center */}
+              {saved && (
+                <p className="text-xs text-green-600 dark:text-green-400 font-medium animate-in fade-in slide-in-from-left-2 duration-300">
+                  Changes saved!
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -575,10 +711,7 @@ export default function Profile() {
               )}
             </Field>
           </FieldGroup>
-          <Button
-            disabled={!currentPassword || !newPassword || newPassword !== confirmPassword}
-            className="w-full sm:w-auto h-11 px-8 text-xs uppercase tracking-widest"
-          >
+          <Button disabled={!currentPassword || !newPassword || newPassword !== confirmPassword} className="w-full sm:w-auto h-11 px-8 text-xs uppercase tracking-widest">
             Update Password
           </Button>
         </div>

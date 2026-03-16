@@ -7,23 +7,16 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
-  LockKeyhole,
-  ShieldCheck,
-  Tag,
   Truck,
   Zap,
-  CreditCard,
   Smartphone,
   Banknote,
   ChevronRight,
-  MessageCircle,
-  Box,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 
 const cartItems = [
   { id: 1, name: "Velvet Lounge Chair", price: 450, qty: 1, image: "/chair1.png", color: "Forest Green" },

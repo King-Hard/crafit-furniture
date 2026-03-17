@@ -67,9 +67,9 @@ export default function AdminSidebar() {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Reports">
-                <Link href="/admin/reports-analytics" className="flex items-center gap-3">
+                <Link href="/admin/analytics" className="flex items-center gap-3">
                   <BarChart2 size={18} />
-                  <span>Reports & Analytics</span>
+                  <span>Analytics</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

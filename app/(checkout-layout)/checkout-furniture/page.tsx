@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -46,12 +45,11 @@ const shippingOptions = [
 
 const paymentMethods = [
   { id: "paymongo", icon: Smartphone, label: "Online Payment", detail: "Pay via PayMongo" },
-  { id: "cod",   icon: Banknote,   label: "Cash on Delivery", detail: "Pay when your order arrives" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function Checkout() {
+export default function CheckoutFurniture() {
   const router = useRouter();
 
   const [selectedShipping, setSelectedShipping] = useState("standard");
@@ -64,7 +62,7 @@ export default function Checkout() {
   const visibleItems = showAllItems ? cartItems : cartItems.slice(0, PREVIEW_COUNT);
   
   return (
-    <div className="mx-auto max-w-7xl px-6 lg:px-12 py-12">
+    <div className="mx-auto max-w-7xl px-6 lg:px-12 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="grid grid-cols-1 gap-x-16 gap-y-10 lg:grid-cols-12">
 
         {/* ── LEFT SIDE ──────────────────────────────────────────────────────── */}

@@ -10,8 +10,9 @@ import {
   ChevronDown, X, MapPin,
   Package, Truck, CheckCircle, XCircle,
   MessageCircle, Send, Image as ImageIcon,
-  WandSparkles, ChevronRight,
+  WandSparkles, 
 } from "lucide-react";
+import Link from "next/link";
 
 type OrderStatus = "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
 type DeliveryStatus = "Preparing" | "Out for Delivery" | "Delivered" | "Rescheduled" | "Failed Delivery";
@@ -295,20 +296,21 @@ export default function Profile() {
               const isFailed = order.deliveryStatus === "Failed Delivery" || order.deliveryStatus === "Rescheduled";
 
               return (
-                <div key={order.id} className="border rounded-xl overflow-hidden">
+                <div key={order.id} className="border rounded-xl overflow-hidden bg-card">
                   <button onClick={() => setExpandedOrder(isExpanded ? null : order.id)} className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors text-left">
                     <div>
                       <p className="text-sm font-medium">{order.id}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{order.date} · ₱{order.total.toLocaleString()}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${orderStatusStyles[order.orderStatus]}`}>{order.orderStatus}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${orderStatusStyles[order.orderStatus]}`}>{order.orderStatus}</span>
                       <ChevronDown size={15} className={`text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                     </div>
                   </button>
 
                   {isExpanded && (
-                    <div className="border-t px-5 py-5 space-y-6">
+                    <div className="border-t px-5 py-5 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                      {/* Items List */}
                       <div className="space-y-3">
                         {order.items.map((item, i) => (
                           <div key={i} className="flex items-center gap-4">
@@ -324,6 +326,7 @@ export default function Profile() {
                         ))}
                       </div>
 
+                      {/* Delivery Info */}
                       <div className="border-t pt-4 space-y-2">
                         <div className="flex items-start gap-2">
                           <MapPin size={14} className="text-muted-foreground mt-0.5 shrink-0" />
@@ -337,11 +340,12 @@ export default function Profile() {
                         )}
                       </div>
 
+                      {/* Delivery Status Tracker */}
                       {!isCancelled && (
                         <div className="border-t pt-4">
                           <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-4">Delivery Status</p>
                           {isFailed ? (
-                            <div className="flex items-center gap-2 text-red-500">
+                            <div className="flex items-center gap-2 text-red-500 bg-red-50 dark:bg-red-950/20 p-3 rounded-lg">
                               <XCircle size={16} />
                               <p className="text-sm font-medium">{order.deliveryStatus}</p>
                             </div>
@@ -358,7 +362,7 @@ export default function Profile() {
                                       <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isCompleted ? "bg-foreground text-background" : "bg-muted text-muted-foreground"} ${isActive ? "ring-2 ring-offset-2 ring-foreground" : ""}`}>
                                         <StepIcon size={14} />
                                       </div>
-                                      <p className={`text-[10px] uppercase tracking-wide text-center ${isCompleted ? "text-foreground font-medium" : "text-muted-foreground"}`}>{step}</p>
+                                      <p className={`text-[9px] uppercase tracking-wide text-center ${isCompleted ? "text-foreground font-bold" : "text-muted-foreground"}`}>{step}</p>
                                     </div>
                                     {i < deliverySteps.length - 1 && (
                                       <div className={`flex-1 h-[1px] mb-5 mx-2 ${i < stepIndex ? "bg-foreground" : "bg-border"}`} />
@@ -368,14 +372,6 @@ export default function Profile() {
                               })}
                             </div>
                           )}
-                        </div>
-                      )}
-
-                      {!isCancelled && order.orderStatus !== "Delivered" && (
-                        <div className="border-t pt-4">
-                          <Button variant="outline" className="w-full sm:w-auto text-xs uppercase tracking-widest h-9 px-5 text-red-500 border-red-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600">
-                            <X size={13} className="mr-2" />Cancel Order
-                          </Button>
                         </div>
                       )}
                     </div>
@@ -429,7 +425,9 @@ export default function Profile() {
                             <p className="text-xl font-semibold text-green-700 dark:text-green-300 mt-0.5">{req.quote}</p>
                           </div>
                           {req.status === "Quoted" && (
-                            <Button className="h-9 px-5 text-xs uppercase tracking-widest">Accept</Button>
+                            <Link href="/checkout-customize">
+                              <Button className="h-9 px-5 text-xs uppercase tracking-widest">Proceed to Checkout</Button>
+                            </Link>
                           )}
                         </div>
                       )}

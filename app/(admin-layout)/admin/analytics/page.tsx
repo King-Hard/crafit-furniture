@@ -4,7 +4,6 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
-import { PiggyBank, ShoppingBag, Truck } from "lucide-react";
 import { useState } from "react";
 
 type DateRange = "This Week" | "This Month" | "This Year";
@@ -22,14 +21,6 @@ const orderStatusData = [
   { name: "Pending", value: 12, color: "#eab308" },
   { name: "Shipped", value: 15, color: "#a855f7" },
   { name: "Cancelled", value: 8, color: "#ef4444" },
-];
-
-const topProducts = [
-  { name: "L-Shape Sofa", revenue: 192000, sold: 8 },
-  { name: "Mahogany Dining", revenue: 222000, sold: 12 },
-  { name: "Queen Bed Frame", revenue: 180000, sold: 15 },
-  { name: "Office Chair", revenue: 108000, sold: 24 },
-  { name: "Wooden Bookshelf", revenue: 68000, sold: 10 },
 ];
 
 const customerData: Record<DateRange, { date: string; new: number; returning: number }[]> = {
@@ -81,6 +72,15 @@ const customizeData = [
   { name: "Rejected", value: 5, color: "#ef4444" },
 ];
 
+const materialConsumptionData = [
+  { name: "Mahogany", consumed: 240, remaining: 45, unit: "board ft" },
+  { name: "Narra", consumed: 180, remaining: 120, unit: "board ft" },
+  { name: "Pine", consumed: 95, remaining: 200, unit: "board ft" },
+  { name: "Plywood", consumed: 85, remaining: 30, unit: "sheets" },
+  { name: "Acacia Slab", consumed: 40, remaining: 8, unit: "pcs" },
+  { name: "Fabric", consumed: 120, remaining: 60, unit: "meters" },
+];
+
 const dateRanges: DateRange[] = ["This Week", "This Month", "This Year"];
 
 function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
@@ -98,33 +98,12 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle?: st
 export default function Reports() {
   const [dateRange, setDateRange] = useState<DateRange>("This Week");
 
-  const stats = [
-    {
-      label: "Net Profit",
-      value: `₱${netProfitData[dateRange].toLocaleString()}`,
-      icon: PiggyBank,
-      sub: "Revenue minus expenses",
-    },
-    {
-      label: "Total Orders",
-      value: dateRange === "This Week" ? "24" : dateRange === "This Month" ? "95" : "1,240",
-      icon: ShoppingBag,
-      sub: "All order statuses",
-    },
-    {
-      label: "Delivery Success Rate",
-      value: "94%",
-      icon: Truck,
-      sub: "Delivered vs total",
-    },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">Reports & Analytics</h1>
+          <h1 className="text-xl font-semibold">Analytics</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Insights beyond your dashboard</p>
         </div>
         <div className="flex items-center gap-1 border rounded-lg p-1">
@@ -144,70 +123,70 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* 3 Stat Cards */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {stats.map(({ label, value, icon: Icon, sub }) => (
-          <div key={label} className="border bg-card p-5 rounded-lg space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-muted-foreground text-sm font-medium">{label}</p>
-              <div className="bg-muted p-1.5 rounded-md">
-                <Icon size={14} strokeWidth={2} className="text-muted-foreground" />
-              </div>
-            </div>
-            <p className="text-2xl font-semibold">{value}</p>
-            <p className="text-xs text-muted-foreground">{sub}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* Order Analytics + Top Products */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ChartCard title="Order Analytics" subtitle="Breakdown by order status">
           <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={orderStatusData}
-                cx="50%" cy="50%"
-                innerRadius={60} outerRadius={90}
-                paddingAngle={3} dataKey="value"
-              >
-                {orderStatusData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
-              </Pie>
+            {/* Idinagdag ang layout="vertical" at inadjust ang margin para sa labels */}
+            <BarChart 
+              data={orderStatusData} 
+              layout="vertical" 
+              margin={{ left: -15, right: 30, top: 10, bottom: 10 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} />
+              
+              {/* XAxis ngayon ang magpapakita ng values */}
+              <XAxis type="number" hide />
+              
+              {/* YAxis ang magpapakita ng names (Delivered, Shipped, etc.) */}
+              <YAxis 
+                dataKey="name" 
+                type="category" 
+                tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                tickLine={false}
+                axisLine={false}
+                width={80}
+              />
+              
               <Tooltip
-                formatter={(value: number, name: string) => [value, name]}
-                contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "12px" }}
-              />
-              <Legend wrapperStyle={{ fontSize: "11px" }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
-
-        <ChartCard title="Top Products" subtitle="By total revenue">
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={topProducts} layout="vertical" barSize={14} margin={{ left: 10, right: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-              <XAxis
-                type="number"
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                tickLine={false} axisLine={false}
-                tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
-              />
-              <YAxis
-                type="category" dataKey="name"
-                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-                tickLine={false} axisLine={false} width={120}
-              />
-              <Tooltip
-                formatter={(value: number) => [`₱${value.toLocaleString()}`, "Revenue"]}
-                contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "12px" }}
+                contentStyle={{ 
+                  backgroundColor: "var(--card)", 
+                  border: "1px solid var(--border)", 
+                  borderRadius: "8px", 
+                  fontSize: "12px" 
+                }}
+                labelStyle={{ color: "var(--foreground)" }} 
+                itemStyle={{ color: "var(--foreground)" }} 
                 cursor={{ fill: "var(--muted)", opacity: 0.4 }}
               />
-              <Bar dataKey="revenue" fill="var(--primary)" radius={[0, 4, 4, 0]} />
+              
+              {/* Isang Bar lang pero gagamit tayo ng Cell para sa iba-ibang kulay */}
+              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
+                {orderStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
+
+        <ChartCard title="Raw Material Consumption" subtitle="Consumed vs remaining stock">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={materialConsumptionData} barSize={16} margin={{ left: -20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} />
+              <Tooltip
+                formatter={(value: number, name: string) => [value, name === "consumed" ? "Consumed" : "Remaining"]}
+                contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "12px" }}
+                cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+              />
+              <Legend formatter={(value) => value === "consumed" ? "Consumed" : "Remaining"} wrapperStyle={{ fontSize: "11px" }} />
+              <Bar dataKey="consumed" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="remaining" fill="var(--muted-foreground)" opacity={0.4} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+              
       </section>
 
       {/* Customer Insights */}

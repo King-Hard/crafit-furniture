@@ -71,7 +71,6 @@ const furnitureCategories = [
   { id: "other", label: "Other", placeholders: { width: '0"', depth: '0"', height: '0"' } },
 ];
 
-// ─── Estimation Logic ─────────────────────────────────────────────────────────
 function computeEstimate(
   furnitureType: string,
   woodType: string,
@@ -143,8 +142,7 @@ export default function Customize() {
   const [budget, setBudget] = useState("");
   const [dimensions, setDimensions] = useState({ width: "", depth: "", height: "" });
   const [message, setMessage] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -165,16 +163,30 @@ export default function Customize() {
     : null;
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Limitahan sa 3 images total
+    const availableSlots = 3 - images.length;
+    const filesToAdd = files.slice(0, availableSlots);
+
+    const newImages = filesToAdd.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
+
+    setImages(prev => [...prev, ...newImages]);
+    
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  function handleRemoveImage() {
-    setImageFile(null);
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  function handleRemoveImage(index: number) {
+    setImages(prev => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index].preview); 
+      updated.splice(index, 1);
+      return updated;
+    });
   }
 
   function handleSelectMaterial(material: string) {
@@ -269,12 +281,6 @@ export default function Customize() {
                       onChange={(e) => setCustomType(e.target.value)} 
                       className="h-12" 
                     />
-                    <div className="p-3 border-l-2 border-muted bg-muted/20 flex gap-2">
-                      <Info size={14} className="text-muted-foreground shrink-0 mt-1" />
-                      <p className="text-xs lg:text-sm text-muted-foreground">
-                        <span className="font-bold text-foreground">Note:</span> For custom items not in our list, the owner will provide a quote after reviewing your request.
-                      </p>
-                    </div>
                   </div>
                 )}
 
@@ -368,7 +374,7 @@ export default function Customize() {
                       <Info size={14} className="text-muted-foreground shrink-0 mt-1" />
                       <p className="text-xs lg:text-sm text-muted-foreground">
                         <span className="font-bold text-foreground">Note:</span> Price estimate is not available for "Other" selections.
-                        The owner will provide a quote after reviewing your request.
+                        
                       </p>
                     </div>
                   </div>
@@ -406,25 +412,57 @@ export default function Customize() {
 
               {/* Reference Image */}
               <Field>
-                <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Reference Image <span className="text-muted-foreground font-normal normal-case tracking-normal">(optional)</span></FieldLabel>
-                {imagePreview ? (
-                  <div className="relative w-full aspect-video bg-accent/70 overflow-hidden rounded-lg">
-                    <Image src={imagePreview} alt="Reference" fill className="object-cover" />
-                    <button onClick={handleRemoveImage} className="absolute top-3 right-3 p-1.5 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background transition-colors">
-                      <X size={14} />
+                <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">
+                  Reference Images <span className="text-muted-foreground font-normal normal-case tracking-normal">({images.length}/3 optional)</span>
+                </FieldLabel>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Image Previews */}
+                  {images.map((img, index) => (
+                    <div key={index} className="relative aspect-video bg-accent/70 overflow-hidden rounded-lg border border-border">
+                      <Image src={img.preview} alt={`Reference ${index + 1}`} fill className="object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => handleRemoveImage(index)} 
+                        className="absolute top-2 right-2 p-1.5 bg-background/80 backdrop-blur-sm rounded-full hover:bg-destructive hover:text-destructive-foreground transition-all"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Upload Button - Lalabas lang kung kulang pa sa 3 ang images */}
+                  {images.length < 3 && (
+                    <button 
+                      type="button" 
+                      onClick={() => fileInputRef.current?.click()} 
+                      className={cn(
+                        "h-50 w-full border border-dashed rounded-lg flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground hover:text-foreground transition-all bg-muted/5",
+                        images.length === 0 ? "aspect-video sm:col-span-2" : "aspect-video"
+                      )}
+                    >
+                      <Upload size={20} strokeWidth={1.5} />
+                      <span className="text-[10px] uppercase tracking-widest font-semibold">
+                        {images.length === 0 ? "Upload References" : "Add More"}
+                      </span>
                     </button>
-                  </div>
-                ) : (
-                  <button 
-                    type="button" 
-                    onClick={() => fileInputRef.current?.click()} 
-                    className="w-full h-34 border border-dashed rounded-lg flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-foreground hover:text-foreground transition-colors"
-                  >
-                    <Upload size={20} strokeWidth={1.5} />
-                    <span className="text-xs uppercase tracking-widest">Click to upload</span>
-                  </button>
-                )}
-                <Input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  )}
+                </div>
+                
+                <Input 
+                  ref={fileInputRef} 
+                  type="file" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={handleImageChange} 
+                  className="hidden" 
+                />
+                <div className="p-3 border-l-2 border-muted bg-muted/20 flex gap-2">
+                  <Info size={14} className="text-muted-foreground shrink-0 mt-1" />
+                  <p className="text-xs lg:text-sm text-muted-foreground">
+                    <span className="font-bold text-foreground">Tip:</span> You can upload up to 3 images to show different angles or inspirations.
+                  </p>
+                </div>
               </Field>
 
               {/* Additional Details */}

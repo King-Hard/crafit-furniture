@@ -146,7 +146,7 @@ export default function CartWithItems() {
               </div>
             </div>
 
-            <Link href="/checkouts">
+            <Link href="/checkout-furniture">
               <Button variant="outline" className="w-full h-12 text-xs uppercase tracking-widest font-bold mt-4">
                 Proceed to Checkout
               </Button>

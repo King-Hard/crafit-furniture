@@ -39,14 +39,14 @@ interface RawMaterial {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const initialProducts: Product[] = [
-  { id: 1, name: "Mahogany Dining Table", category: "Dining", stock: 12, price: 18500, status: "In Stock", materialsUsed: [{ materialId: 2, quantity: 20 }, { materialId: 9, quantity: 4 }] },
-  { id: 2, name: "L-Shape Sofa", category: "Living Room", stock: 3, price: 24000, status: "Low Stock", materialsUsed: [{ materialId: 5, quantity: 8 }, { materialId: 6, quantity: 2 }, { materialId: 9, quantity: 6 }] },
-  { id: 3, name: "Queen Bed Frame", category: "Bedroom", stock: 0, price: 12000, status: "Out of Stock", materialsUsed: [{ materialId: 1, quantity: 30 }, { materialId: 9, quantity: 8 }] },
-  { id: 4, name: "Office Chair", category: "Office", stock: 24, price: 4500, status: "In Stock", materialsUsed: [{ materialId: 5, quantity: 3 }, { materialId: 7, quantity: 1 }, { materialId: 9, quantity: 4 }] },
-  { id: 5, name: "Wooden Bookshelf", category: "Living Room", stock: 2, price: 6800, status: "Low Stock", materialsUsed: [{ materialId: 3, quantity: 15 }, { materialId: 9, quantity: 2 }] },
-  { id: 6, name: "Coffee Table", category: "Living Room", stock: 8, price: 7200, status: "In Stock", materialsUsed: [{ materialId: 4, quantity: 10 }, { materialId: 8, quantity: 1 }] },
-  { id: 7, name: "Wardrobe Cabinet", category: "Bedroom", stock: 0, price: 15000, status: "Out of Stock", materialsUsed: [{ materialId: 3, quantity: 25 }, { materialId: 9, quantity: 6 }] },
-  { id: 8, name: "Study Desk", category: "Office", stock: 6, price: 5500, status: "In Stock", materialsUsed: [{ materialId: 2, quantity: 12 }, { materialId: 9, quantity: 3 }] },
+  { id: 1, name: "Mahogany Dining Table", category: "Table", stock: 12, price: 18500, status: "In Stock", materialsUsed: [{ materialId: 2, quantity: 20 }, { materialId: 9, quantity: 4 }] },
+  { id: 2, name: "L-Shape Sofa", category: "Chair", stock: 3, price: 24000, status: "Low Stock", materialsUsed: [{ materialId: 5, quantity: 8 }, { materialId: 6, quantity: 2 }, { materialId: 9, quantity: 6 }] },
+  { id: 3, name: "Queen Bed Frame", category: "Bed frames", stock: 0, price: 12000, status: "Out of Stock", materialsUsed: [{ materialId: 1, quantity: 30 }, { materialId: 9, quantity: 8 }] },
+  { id: 4, name: "Office Chair", category: "Chair", stock: 24, price: 4500, status: "In Stock", materialsUsed: [{ materialId: 5, quantity: 3 }, { materialId: 7, quantity: 1 }, { materialId: 9, quantity: 4 }] },
+  { id: 5, name: "Wooden Bookshelf", category: "Cabinet", stock: 2, price: 6800, status: "Low Stock", materialsUsed: [{ materialId: 3, quantity: 15 }, { materialId: 9, quantity: 2 }] },
+  { id: 6, name: "Coffee Table", category: "Table", stock: 8, price: 7200, status: "In Stock", materialsUsed: [{ materialId: 4, quantity: 10 }, { materialId: 8, quantity: 1 }] },
+  { id: 7, name: "Wardrobe Cabinet", category: "Cabinet", stock: 0, price: 15000, status: "Out of Stock", materialsUsed: [{ materialId: 3, quantity: 25 }, { materialId: 9, quantity: 6 }] },
+  { id: 8, name: "Study Desk", category: "Table", stock: 6, price: 5500, status: "In Stock", materialsUsed: [{ materialId: 2, quantity: 12 }, { materialId: 9, quantity: 3 }] },
 ];
 
 const initialMaterials: RawMaterial[] = [
@@ -78,7 +78,7 @@ const materialStatusStyles: Record<MaterialStatus, string> = {
   "Out": "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
 };
 
-const productCategories = ["All", "Dining", "Living Room", "Bedroom", "Office"];
+const productCategories = ["All", "Table", "Chair", "Bed frames", "Cabinet"];
 const materialCategoryOptions: (MaterialCategory | "All")[] = ["All", "Wood", "Fabric & Upholstery", "Metal", "Glass", "Finishing", "Hardware"];
 const materialUnits: MaterialUnit[] = ["board feet", "meters", "kg", "sheets", "pieces", "liters"];
 
@@ -152,7 +152,7 @@ export default function Inventory() {
   const [selectedMaterial, setSelectedMaterial] = useState<RawMaterial | null>(null);
 
   // Add Product form state
-  const [newProduct, setNewProduct] = useState({ name: "", category: "Dining", stock: "", price: "", status: "In Stock" as StockStatus });
+  const [newProduct, setNewProduct] = useState({ name: "", category: "Table", stock: "", price: "", status: "In Stock" as StockStatus });
 
   // Add Material form state
   const [newMaterial, setNewMaterial] = useState({ name: "", category: "Wood" as MaterialCategory, stock: "", unit: "board feet" as MaterialUnit, reorderPoint: "", status: "Available" as MaterialStatus });
@@ -189,7 +189,7 @@ export default function Inventory() {
       materialsUsed: [],
     };
     setProducts(prev => [...prev, product]);
-    setNewProduct({ name: "", category: "Dining", stock: "", price: "", status: "In Stock" });
+    setNewProduct({ name: "", category: "Table", stock: "", price: "", status: "In Stock" });
     setShowAddProduct(false);
   }
 
@@ -461,7 +461,7 @@ export default function Inventory() {
             </FormField>
             <FormField label="Category">
               <SelectInput value={newProduct.category} onChange={(v) => setNewProduct(p => ({ ...p, category: v }))}>
-                {["Dining", "Living Room", "Bedroom", "Office"].map(c => <option key={c} value={c}>{c}</option>)}
+                {["Table", "Cabinet", "Chair", "Bed frames"].map(c => <option key={c} value={c}>{c}</option>)}
               </SelectInput>
             </FormField>
             <div className="grid grid-cols-2 gap-3">
@@ -496,7 +496,7 @@ export default function Inventory() {
             </FormField>
             <FormField label="Category">
               <SelectInput value={selectedProduct.category} onChange={(v) => setSelectedProduct(p => p ? ({ ...p, category: v }) : p)}>
-                {["Dining", "Living Room", "Bedroom", "Office"].map(c => <option key={c} value={c}>{c}</option>)}
+                {["Table", "Cabinet", "Chair", "Bed frames"].map(c => <option key={c} value={c}>{c}</option>)}
               </SelectInput>
             </FormField>
             <div className="grid grid-cols-2 gap-3">

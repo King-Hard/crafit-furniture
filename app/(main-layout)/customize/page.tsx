@@ -398,9 +398,9 @@ export default function Customize() {
                       <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>
                     {budgetWarning && (
-                      <div className="mt-3 p-3 border-l-2 border-amber-400 bg-amber-50/50 flex gap-2">
-                        <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-muted-foreground">{budgetWarning}</p>
+                      <div className="mt-3 flex gap-2 p-3 bg-muted/50 rounded-lg">
+                        <Info size={14} className=" shrink-0 mt-1" />
+                        <p className="text-xs lg:text-sm text-muted-foreground">{budgetWarning}</p>
                       </div>
                     )}
                   </Field>

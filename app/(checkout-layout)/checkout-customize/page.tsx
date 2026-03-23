@@ -29,7 +29,7 @@ const customRequest = {
   budget: "₱25,000 – ₱50,000",
   status: "Quoted",
   quote: "₱38,500",
-  materials: ["Fabric Upholstery", "Metal Frame"],
+  materials: ["Mahogany", "Varnish"],
   dimensions: { width: '96"', depth: '60"', height: '32"' },
   message: "I want a gray L-shape sofa with wooden legs and removable covers.",
   image: null,

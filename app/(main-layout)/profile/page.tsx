@@ -164,7 +164,6 @@ const tabs = [
   { id: "requests", label: "My Requests", icon: WandSparkles },
   { id: "messages", label: "Messages", icon: MessageCircle },
   { id: "profile", label: "Profile Info", icon: User },
-  { id: "security", label: "Security", icon: KeyRound },
 ];
 
 export default function Profile() {
@@ -184,11 +183,6 @@ export default function Profile() {
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
   const [address, setAddress] = useState("123 Rizal St., Baliuag, Bulacan");
-  const [facebook, setFacebook] = useState("");
-
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputText, setInputText] = useState("");
@@ -680,38 +674,6 @@ export default function Profile() {
               )}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* SECURITY TAB */}
-      {activeTab === "security" && (
-        <div className="max-w-md space-y-6">
-          <FieldGroup>
-            <Field>
-              <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Current Password</FieldLabel>
-              <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="h-12" placeholder="••••••••" />
-            </Field>
-            <Field>
-              <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">New Password</FieldLabel>
-              <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="h-12" placeholder="••••••••" />
-            </Field>
-            <Field>
-              <FieldLabel className="text-[11px] font-bold uppercase tracking-wide">Confirm New Password</FieldLabel>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`h-12 ${confirmPassword && newPassword !== confirmPassword ? "border-red-400 focus-visible:ring-red-400" : ""}`}
-                placeholder="••••••••"
-              />
-              {confirmPassword && newPassword !== confirmPassword && (
-                <p className="text-xs text-red-500 mt-1">Passwords do not match.</p>
-              )}
-            </Field>
-          </FieldGroup>
-          <Button disabled={!currentPassword || !newPassword || newPassword !== confirmPassword} className="w-full sm:w-auto h-11 px-8 text-xs uppercase tracking-widest">
-            Update Password
-          </Button>
         </div>
       )}
     </div>

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Constants & Data ─────────────────────────────────────────────────────────
 
-const standardWoodTypes = ["Narra", "Yakal", "Mahogany", "Acacia", "Pine", "Cherry", "Other"];
+const standardWoodTypes = ["Narra", "Yakal", "Mahogany", "Acacia", "Pine", "Cherry"];
 
 const woodMultipliers: Record<string, number> = {
   "Narra": 2.2,
@@ -87,7 +87,6 @@ function computeEstimate(
   finishingId: string
 ): { low: number; high: number; breakdown: { label: string; value: string }[] } | null {
   if (!furnitureType || furnitureType === "other") return null;
-  if (!woodType || woodType === "Other") return null;
 
   const base = basePrices[furnitureType] ?? 8000;
   const woodMult = woodMultipliers[woodType] ?? 1.3;
@@ -315,11 +314,6 @@ export default function Customize() {
                       </button>
                     ))}
                   </div>
-                  {selectedMaterial === "Other" && (
-                    <div className="mt-1">
-                      <Input placeholder="Specify wood type" value={customMaterial} onChange={(e) => setCustomMaterial(e.target.value)} className="h-12" />
-                    </div>
-                  )}
                 </Field>
               )}
 
